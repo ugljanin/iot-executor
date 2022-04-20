@@ -6,15 +6,15 @@
  */
 
 // These variables define the connection information for your MySQL database.
-$db_user = 'doktorske_iotexecutor';
-$db_pass = '1nIp8LLmny';
-$db_host = 'localhost';
-$db_name = 'doktorske_iotexecutordb';
+$db_user = '';
+$db_pass = '';
+$db_host = '';
+$db_name = '';
 
 // These variables define the connection information for your MQTT server.
-$mqtt_host   = '78.47.152.109';
-$mqtt_user   = 'emir';
-$mqtt_pass   = 'emirugljanin';
+$mqtt_host   = '';
+$mqtt_user   = '';
+$mqtt_pass   = '';
 $mqtt_port   = 1883;
-$mqtt_client = 'b2s4b';
+$mqtt_client = 'iot-executor';
 
