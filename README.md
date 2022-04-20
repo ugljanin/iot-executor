@@ -7,19 +7,6 @@ The devices are first loaded with basic sceleton that provides communication wit
 notify that device about pending update, the device will stop current execution, restart, download the new code and compile it, and at the end start with new code.
 
 So basically, the IoT Executor allows easy management of NodeMCU devices, without need for phisical connection.
-## Screenshots
-
-### List of registered devices
-![Devices list](/assets/screenshots/devices.png "Devices list")
-### List of registered mutations
-![Mutations list](/assets/screenshots/mutations-list.png "Mutations list")
-### Assign mutation to a device
-![Assign mutation](/assets/screenshots/assign-mutation.png "Assign mutation")
-### View mutation code
-![Mutation code](/assets/screenshots/mutation-code.png "Mutation code")
-
-
-
 ## Configuration
 To be able to run the system, some preparation is needed. At first to load the devices with proper firmware that allows use of MQTT, and HTTP protocols, then to load the framework that allows communication with IoT Executor, and then to configure the dashboard.
 Each device that is planned to be used with IoT Executor, should apply the steps bellow.
@@ -64,3 +51,13 @@ Once the devices are registered, you can create multiple scripts with the code t
 It is important not to use cpu blocking functions such as tmr.delay() but to use alarm instead, and to avoid infinite loops, as they could block the script.
 
 After adding the scripts (mutations), they could be assigned to any device. If the device is running, and is connected to WiFi and MQTT broker, it will receive signal that the update is pending, it will stop current execution, download and compile new code and restart. After restarting the device will have new function as per the engineer has defined.
+## Screenshots
+
+### List of registered devices
+![Devices list](/assets/screenshots/devices.png "Devices list")
+### List of registered mutations
+![Mutations list](/assets/screenshots/mutations-list.png "Mutations list")
+### Assign mutation to a device
+![Assign mutation](/assets/screenshots/assign-mutation.png "Assign mutation")
+### View mutation code
+![Mutation code](/assets/screenshots/mutation-code.png "Mutation code")
