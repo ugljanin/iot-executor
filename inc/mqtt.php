@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+if(!defined('Functions')){die('You are not authorised to access this');}
 require __DIR__ . '/vendor/autoload.php';
 
 use PhpMqtt\Client\Exceptions\MqttClientException;

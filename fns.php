@@ -1,8 +1,5 @@
 <?php
-session_start(); // ready to go!
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
+session_start();
 $now = time();
 if (isset($_SESSION['expire']) && $now > $_SESSION['expire']) {
     // this session has worn out its welcome; kill it and start a brand new one
@@ -17,7 +14,7 @@ if (isset($_SESSION["messagetype"]) && $_SESSION["messagetype"] != "" && $_SESSI
     $_SESSION["message"] = "";
 }
 define("Functions", true);
-require_once("functions.php");
-require_once("config.php");
-require_once("db_fns.php");
-require_once("mqtt.php");
+require_once("inc/functions.php");
+require_once("inc/config.php");
+require_once("inc/mysql.php");
+require_once("inc/mqtt.php");

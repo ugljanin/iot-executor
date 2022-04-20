@@ -1,4 +1,5 @@
 <?php
+if(!defined('Functions')){die('You are not authorised to access this');}
 $options = array( PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8' );
 
 try {
