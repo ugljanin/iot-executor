@@ -10,7 +10,7 @@ So basically, the IoT Executor allows easy management of NodeMCU devices, withou
 ## Screenshots
 
 ### List of registered devices
-![Devices list](/assets/screenshots/devices-list.png "Devices list")
+![Devices list](/assets/screenshots/devices.png "Devices list")
 ### List of registered mutations
 ![Mutations list](/assets/screenshots/mutations-list.png "Mutations list")
 ### Assign mutation to a device
