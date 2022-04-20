@@ -12,14 +12,14 @@ $filename=basename($_SERVER['PHP_SELF']);
 
 
    <!-- Bootstrap -->
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
     <!-- NProgress -->
-    <link href="/css/nprogress.css" rel="stylesheet">
+    <link href="/assets/css/nprogress.css" rel="stylesheet">
 
     <!-- Custom styling plus plugins -->
-    <link href="/css/custom.min.css" rel="stylesheet">
+    <link href="/assets/css/custom.min.css" rel="stylesheet">
 
     <!-- jQuery -->
     <script src="/js/jquery.min.js"></script>
@@ -81,7 +81,7 @@ $filename=basename($_SERVER['PHP_SELF']);
                 <ul class="nav navbar-nav navbar-right">
                   <li class="">
                     <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                      <img src="img/manager.png" alt=""><?php echo $_SESSION['user'];?>
+                      <img src="assets/img/manager.png" alt=""><?php echo $_SESSION['user'];?>
                       <span class=" fa fa-angle-down"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-usermenu pull-right">
