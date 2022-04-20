@@ -18,4 +18,3 @@ $mqtt_user   = '';
 $mqtt_pass   = '';
 $mqtt_port   = 1883;
 $mqtt_client = 'b2s4b';
-
