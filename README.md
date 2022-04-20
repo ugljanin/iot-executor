@@ -8,6 +8,12 @@ notify that device about pending update, the device will stop current execution,
 
 So basically, the IoT Executor allows easy management of NodeMCU devices, without need for phisical connection.
 
+![Devices list](/assets/screenshots/devices-list.png "Devices list")
+![Mutations list](/assets/screenshots/mutations-list.png "Mutations list")
+![Mutation code](/assets/screenshots/mutation-code.png "Mutation code")
+
+
+
 ## Configuration
 To be able to run the system, some preparation is needed. At first to load the devices with proper firmware that allows use of MQTT, and HTTP protocols, then to load the framework that allows communication with IoT Executor, and then to configure the dashboard.
 Each device that is planned to be used with IoT Executor, should apply the steps bellow.
