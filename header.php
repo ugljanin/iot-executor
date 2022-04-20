@@ -41,7 +41,7 @@ $filename=basename($_SERVER['PHP_SELF']);
             <!-- menu profile quick info -->
             <div class="profile clearfix">
               <div class="profile_pic">
-                <img src="img/manager.png" alt="..." class="img-circle profile_img">
+                <img src="assets/img/manager.png" alt="..." class="img-circle profile_img">
               </div>
               <div class="profile_info">
                 <span>Welcome,</span>
