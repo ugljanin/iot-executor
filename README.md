@@ -1,4 +1,3 @@
-
 # IoT Executor - IoT connector
 
 This project is a part of the PhD thesis where I use ESP8266 microcontrollers and controll them with the web-based dashboard.
