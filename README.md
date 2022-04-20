@@ -7,9 +7,15 @@ The devices are first loaded with basic sceleton that provides communication wit
 notify that device about pending update, the device will stop current execution, restart, download the new code and compile it, and at the end start with new code.
 
 So basically, the IoT Executor allows easy management of NodeMCU devices, without need for phisical connection.
+## Screenshots
 
+### List of registered devices
 ![Devices list](/assets/screenshots/devices-list.png "Devices list")
+### List of registered mutations
 ![Mutations list](/assets/screenshots/mutations-list.png "Mutations list")
+### Assign mutation to a device
+![Assign mutation](/assets/screenshots/assign-mutation.png "Assign mutation")
+### View mutation code
 ![Mutation code](/assets/screenshots/mutation-code.png "Mutation code")
 
 
