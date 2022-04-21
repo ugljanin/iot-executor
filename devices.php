@@ -116,12 +116,11 @@ if ( $_GET['action'] == 'mutations' ) {
 } else if ($_GET['action'] == 'addmutation' && $_SESSION['role'] == 'engineer' ) {
     if (isset($_GET['id'])) {
 
-        $nodeId = $_GET['id'];
+        $node_id = $_GET['id'];
 
-        $sql  = "SELECT * FROM esp WHERE id= :id";
-        $stmt = $db->prepare($sql);
+        $stmt = $db->prepare("SELECT * FROM esp WHERE id= :id");
+        $stmt->execute(['id' => $node_id]);
 
-        $stmt->execute(['id' => $nodeId]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         $r_name   = $result['name'];
@@ -131,7 +130,7 @@ if ( $_GET['action'] == 'mutations' ) {
 ?>
     <div class='container'>
         <form class='form-horizontal' action='devices.php?action=savemutation' method='POST'>
-            <input type='hidden' value='<?php echo $nodeId; ?>' name='esp_id' />
+            <input type='hidden' value='<?php echo $node_id; ?>' name='esp_id' />
             <?php
             if (isset($_GET['actionid']))
                 echo "<input type='hidden' value=$_GET[actionid] name='edit' />";
@@ -157,12 +156,12 @@ if ( $_GET['action'] == 'mutations' ) {
 } else if ($_GET['action'] == 'add') {
     if (isset($_GET['id'])) {
 
-        $nodeIdUpd = $_GET['id'];
+        $node_id = $_GET['id'];
 
-        $sql = "SELECT * FROM esp WHERE id=$nodeIdUpd";
-        $sth = $db->prepare($sql);
-        $sth->execute();
-        $result = $sth->fetch(PDO::FETCH_ASSOC);
+        $stmt = $db->prepare("SELECT * FROM esp WHERE id= :id");
+        $stmt->execute(['id' => $node_id]);
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         $r_name   = $result['name'];
         $r_desc   = $result['description'];
@@ -172,8 +171,8 @@ if ( $_GET['action'] == 'mutations' ) {
     <div class='container'>
         <form class='form-horizontal' action='devices.php?action=save' method='POST'>
             <?php
-            if (isset($nodeIdUpd))
-                echo "<input type='hidden' value=$nodeIdUpd name='id' />";
+            if (isset($node_id))
+                echo "<input type='hidden' value=$node_id name='id' />";
             ?>
             <div class='form-group'>
                 <label class='col-md-2 control-label' for='Node name'>Node name</label>
@@ -197,9 +196,8 @@ if ( $_GET['action'] == 'mutations' ) {
     <?php
     if (isset($_GET['id'])) {
 
-        $sql = "SELECT * FROM data WHERE esp_id=$nodeIdUpd";
-        $sth = $db->prepare($sql);
-        $sth->execute();
+        $stmt = $db->prepare('SELECT * FROM data WHERE esp_id = :nodeId');
+        $stmt->execute(['nodeId'=>$node_id ]);
         $result = $sth->fetch(PDO::FETCH_ASSOC);
 
         $r_folder   = $result['folder'];
@@ -226,37 +224,37 @@ if ( $_GET['action'] == 'mutations' ) {
     <?php
     }
 } else if ($_GET['action'] == 'save') {
-    $chipid   = $_POST['chipid'];
-    $nodeDesc = $_POST['Ndesc'];
-    $nodeName = $_POST['Nname'];
+    $node_id   = $_POST['chipid'];
+    $node_desc = $_POST['Ndesc'];
+    $node_name = $_POST['Nname'];
 
     if (isset($_POST['id'])) {
-        $nodeId = $_POST['id'];
+        $node_id = $_POST['id'];
 
         $stmt = $db->prepare('UPDATE esp SET `name` = :nodeName, `description` = :nodeDesc, `chip_id` = :chipid WHERE id = :nodeId');
-        $stmt->execute(['nodeName' => $nodeName, 'nodeDesc'=> $nodeDesc, 'chipid'=>$chipid, 'nodeId'=>$nodeId ]);
+        $stmt->execute(['nodeName' => $node_name, 'nodeDesc'=> $node_desc, 'chipid'=>$node_id, 'nodeId'=>$node_id ]);
 
     } else {
         $stmt = $db->prepare('INSERT INTO esp (name, description, chip_id) VALUES ( :nodeName, :nodeDesc, :chipid)');
-        $stmt->execute(['nodeName' => $nodeName, 'nodeDesc'=> $nodeDesc, 'chipid'=>$chipid ]);
+        $stmt->execute(['nodeName' => $node_name, 'nodeDesc'=> $node_desc, 'chipid'=>$node_id ]);
     }
 
     $sql = "SELECT * FROM esp WHERE chip_id = :chipid";
     $sth = $db->prepare($sql);
-    $sth->execute([ 'chipid'=>$chipid ]);
+    $sth->execute([ 'chipid'=>$node_id ]);
 
-    $esp_id_fetch = $sth->fetch(PDO::FETCH_ASSOC);
-    $esp_id = $esp_id_fetch['id'];
+    $node_id_fetch = $sth->fetch(PDO::FETCH_ASSOC);
+    $node_id = $node_id_fetch['id'];
 
-    if (!file_exists($path . $chipid)) {
-        mkdir($path . $chipid, 0755, true);
-        $myfile = fopen($path . $chipid . "/boot.lua", "w") or die("Unable to open file!");
+    if (!file_exists($path . $node_id)) {
+        mkdir($path . $node_id, 0755, true);
+        $myfile = fopen($path . $node_id . "/boot.lua", "w") or die("Unable to open file!");
         $txt = "print(\"Hello world\")";
         fwrite($myfile, $txt);
         fclose($myfile);
     }
 
-    $sql = "INSERT INTO data (folder,filename,esp_id) VALUES ('$chipid','boot.lua','$esp_id')";
+    $sql = "INSERT INTO data (folder,filename,esp_id) VALUES ('$node_id','boot.lua','$node_id')";
     $db->exec($sql);
 
     if ($sth->execute()) {
@@ -274,7 +272,7 @@ if ( $_GET['action'] == 'mutations' ) {
     }
 } else if ($_GET['action'] == 'saveboot') {
     $actionid = $_POST['actionid'];
-    $esp_id = $_POST['esp_id'];
+    $node_id = $_POST['esp_id'];
 
     $sql = "SELECT mutations.name, mutations.code,esp.chip_id, mutations.mutationid, mutations_actions.actionid,mutations_actions.esp_id, mutations_actions.boot
     FROM mutations,mutations_actions,esp
@@ -292,7 +290,7 @@ if ( $_GET['action'] == 'mutations' ) {
     fclose($file);
 
     //unselect all
-    $sql = "UPDATE mutations_actions SET boot=0 where esp_id=$esp_id";
+    $sql = "UPDATE mutations_actions SET boot=0 where esp_id=$node_id";
     $db->exec($sql);
 
     //select only the one from the form
@@ -300,11 +298,11 @@ if ( $_GET['action'] == 'mutations' ) {
     $db->exec($sql);
 
     //force update
-    $sql = "UPDATE esp set `update`=1 where id='" . $esp_id . "'";
+    $sql = "UPDATE esp set `update`=1 where id='" . $node_id . "'";
     $db->exec($sql);
 
     //log mutation as initial
-    $sql = "insert into mutations_log (espid, mutationid, mutation_date, type, status) values ('" . $esp_id . "', '" . $result['mutationid'] . "','" . date('Y-m-d H:i:s') . "','init','Pending')";
+    $sql = "insert into mutations_log (espid, mutationid, mutation_date, type, status) values ('" . $node_id . "', '" . $result['mutationid'] . "','" . date('Y-m-d H:i:s') . "','init','Pending')";
     $db->exec($sql);
 
     if ($sth->execute()) {
@@ -317,23 +315,23 @@ if ( $_GET['action'] == 'mutations' ) {
 
         echo "Sent instruction for update \n";
 
-        redirect('devices.php?action=mutations&id=' . $esp_id);
+        redirect('devices.php?action=mutations&id=' . $node_id);
     } else {
         echo '<p>Mutation action boot is not changed</p>';
 
         $_SESSION["messagetype"] = "danger";
         $_SESSION["message"] = "Mutation action boot is not changed";
-        redirect('devices.php?action=mutations&id=' . $esp_id);
+        redirect('devices.php?action=mutations&id=' . $node_id);
     }
 } else if ($_GET['action'] == 'savemutation') {
     $mutationid = $_POST['mutationid'];
     $actionid   = $_POST['actionid'];
-    $esp_id     = $_POST['esp_id'];
+    $node_id    = $_POST['esp_id'];
 
     if (isset($_POST['edit'])) {
-        $sql = "UPDATE mutations_actions SET `mutationid` = '$mutationid', `esp_id` = '$esp_id' WHERE actionid = $actionid";
+        $sql = "UPDATE mutations_actions SET `mutationid` = '$mutationid', `esp_id` = '$node_id' WHERE actionid = $actionid";
     } else {
-        $sql = "INSERT INTO mutations_actions (mutationid,esp_id) VALUES ('$mutationid','$esp_id')";
+        $sql = "INSERT INTO mutations_actions (mutationid,esp_id) VALUES ('$mutationid','$node_id')";
     }
     if ($db->exec($sql)) {
         echo '<p>Mutation action added in database</p>';
@@ -350,11 +348,12 @@ if ( $_GET['action'] == 'mutations' ) {
     }
 } else if ($_GET['action'] == 'update') {
     if (isset($_GET['id'])) {
-        $nodeIdUpd = $_GET['id'];
-        $sql = "SELECT * FROM esp WHERE id=$nodeIdUpd";
-        $sth = $db->prepare($sql);
-        $sth->execute();
-        $result = $sth->fetch(PDO::FETCH_ASSOC);
+        $node_id = $_GET['id'];
+
+        $stmt = $db->prepare("SELECT * FROM esp WHERE id= :id");
+        $stmt->execute(['id' => $node_id]);
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($result['update'] == 1) {
             $val = 0;
@@ -369,7 +368,7 @@ if ( $_GET['action'] == 'mutations' ) {
 
         }
 
-        $sql = "UPDATE esp SET `update`='$val' WHERE id=$nodeIdUpd";
+        $sql = "UPDATE esp SET `update`='$val' WHERE id=$node_id";
         $db->exec($sql);
 
         if ($sth->execute()) {
@@ -388,19 +387,18 @@ if ( $_GET['action'] == 'mutations' ) {
     }
 } else if ($_GET['action'] == 'delete') {
     if (isset($_GET['id'])) {
-        $nodeId = $_GET['id'];
+        $node_id = $_GET['id'];
 
-        $sql = "SELECT * FROM esp WHERE id=$nodeId";
-        $sth = $db->prepare($sql);
-        $sth->execute();
-        $result = $sth->fetch(PDO::FETCH_ASSOC);
+        $stmt = $db->prepare("SELECT * FROM esp WHERE id= :id");
+        $stmt->execute(['id' => $node_id]);
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $chip_id = $result['chip_id'];
 
-        $sql = "DELETE FROM esp WHERE id=$nodeId";
-        $sth = $db->prepare($sql);
-        $sth->execute();
+        $stmt = $db->prepare("DELETE FROM esp WHERE id = :id");
+        $stmt->execute(['id' => $node_id]);
 
-        if ($sth->execute()) {
+        if ($stmt->execute()) {
             unlink($path . $chip_id . "/boot.lua");
             rmdir($path . $chip_id);
             echo '<p>Device is deleted</p>';
@@ -416,94 +414,6 @@ if ( $_GET['action'] == 'mutations' ) {
             redirect('devices.php?action=list');
         }
     }
-} else if ($_GET['action'] == 'files') {
-    ?>
-    <div class="container">
-        <?php
-        if (isset($_GET['files'])) {
-
-            $fileId = $_GET['files'];
-
-            if (isset($_GET['boot'])) {
-                $file_id = $_GET['boot'];
-
-                $sql = "SELECT * FROM data WHERE esp_id=$fileId";
-                $files = $db->query($sql);
-                foreach ($files as $value) {
-                    if ($file_id == $value['id']) {
-                        $sql = "UPDATE data SET `boot`=1 WHERE id=`".$value['id']."`";
-                        $db->exec($sql);
-                    } else {
-                        $sql = "UPDATE data SET `boot`=0 WHERE id=`".$value['id']."`";
-                        $db->exec($sql);
-                    }
-                }
-            }
-
-            if (isset($_GET['delfile'])) {
-                $file_del = $_GET['delfile'];
-
-                $sql = "DELETE FROM data WHERE id=$file_del";
-                $db->exec($sql);
-            }
-        ?>
-            <br /><br />
-            <h4>List of files to be downloaded by esp
-                <form id='form' role='form' action='' method='POST' class='navbar-form navbar-right' enctype='multipart/form-data'>
-
-                    <div class='input-group'>
-                        <span class='input-group-btn'>
-                            <span class='btn btn-primary btn-file'>
-                                Browse&hellip;
-                                <input id='file' type='file' name='files[]' multiple />
-                            </span>
-                        </span>
-                        <input type='text' class='form-control' readonly>
-                    </div>
-
-                    <div class='form-group'>
-                        <input type='hidden' value=$fileId name='esp_id' />
-                        <button type='submit' class='btn btn-success'>Upload</button>
-                    </div>
-
-                </form>
-
-            </h4>
-            <hr>
-            <table class='table table-hover'>
-                <thead>
-                    <tr>
-                        <th>File ID</th>
-                        <th>Filename</th>
-                        <th>Folder</th>
-                        <th>Boot flag</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-
-                    $sql = "SELECT * FROM data WHERE esp_id='$fileId'";
-                    $files = $db->query($sql);
-                    //$file = $files->fetch(PDO::FETCH_ASSOC);
-
-                    foreach ($files as $value) {
-                        echo "<tr>";
-                        echo "<th scope='row'>".$value['id']."</th>";
-                        echo "<td>".$value['filename']."</td>";
-                        echo "<td>".$value['folder']."</td>";
-                        echo "<td>".$value['boot']."</td>";
-                        echo "<td><a href='?files=".$value['esp_id']."&delfile=".$value['id']."' class='btn-sm btn-danger' role='button'>Delete</a>&nbsp;<a href='?files=$value[esp_id]&boot=$value[id]' class='btn-sm btn-success' role='button'>Boot Flag</a>&nbsp;<a href='?editor=$value[id]' class='btn-sm btn-primary' role='button'>Edit</a></td>";
-                        echo "<tr>";
-                    }
-                    ?>
-                </tbody>
-            </table>
-        <?php
-        }
-        ?>
-    </div>
-<?php
 }
 include "footer.php";
 ?>
