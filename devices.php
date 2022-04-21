@@ -75,7 +75,7 @@ if ( $_GET['action'] == 'mutations' ) {
     $id = $_GET['id'];
 ?>
     <div class="container">
-        <h4>Select mutation script from the list below, to be booted on the selected device.
+        <h4>Select mutation script from the list below, in order to be booted on the selected device.
             <?php
             if ($_SESSION['role'] == 'engineer') {
                 echo "<a href='devices.php?action=addmutation&id=$id' class='btn btn-primary pull-right' role='button'>Add additional mutation to list</a>";
@@ -141,64 +141,19 @@ if ( $_GET['action'] == 'mutations' ) {
                 <label for="text">Select mutation:</label>
                 <select name="mutationid" class="form-control">
                     <?php
-
                     $sqlc = "select * from mutations order by name asc";
                     $sth = $db->prepare($sqlc);
                     $sth->execute();
-
                     while ($mutation = $sth->fetch(PDO::FETCH_ASSOC)) {
                         echo '<option value="' . $mutation['mutationid'] . '">' . $mutation['name'] . '</option>';
                     }
                     ?>
                 </select>
             </div>
-
             <button id='submit' name='submit' class='btn btn-danger pull-right'>Submit</button>
-
-
         </form>
     </div>
-
     <?php
-    if (isset($_GET['editor'])) {
-
-        $fileId = $_GET['editor'];
-
-        $sql = "SELECT * FROM data WHERE id=$fileId";
-        $sth = $db->prepare($sql);
-        $sth->execute();
-        $result = $sth->fetch(PDO::FETCH_ASSOC);
-
-        $r_folder   = $result['folder'];
-        $r_filename = $result['filename'];
-        $r_espid    = $result['esp_id'];
-
-        $fn = "uploads/" . $r_folder . "/" . $r_filename;
-        $file = fopen($fn, "a+");
-        $size = filesize($fn);
-        $text = fread($file, $size);
-        fclose($file);
-
-
-        echo " <div class='container'>
-      <br /> <br />
-        <form class='form-horizontal' action='?files=$r_espid' method='POST' enctype='multipart/form-data'>
-        <h4>Online file editor - $r_filename
-        <button id='submit' name='submit' class='btn btn-danger pull-right'>Modify</button></h4><hr>
-
-                <!-- Textarea -->
-                <div class='form-group'>
-                  <div class='col-md-12'>
-                    <textarea class='form-control' id='fileEditor' name='fileEditor_data' style='min-width: 100%' rows='10'>$text</textarea>
-                  </div>
-                </div>";
-
-        echo "<input type='hidden' value=$fileId name='fileEditor_id' />";
-        echo "
-
-            </form>
-    </div>";
-    }
 } else if ($_GET['action'] == 'add') {
     if (isset($_GET['id'])) {
 
@@ -550,7 +505,5 @@ if ( $_GET['action'] == 'mutations' ) {
     </div>
 <?php
 }
-
-
 include "footer.php";
 ?>
