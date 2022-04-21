@@ -23,12 +23,17 @@ Instructions for flashing the firmware are available [here](https://nodemcu.read
 
 For Windows, I used [NodeMCU flasher](https://github.com/nodemcu/nodemcu-flasher).
 
+
 #### Adding IoT Executor framework
 
 - To be able to add IoT Executor framework to your NodeMCU-based device, you need to have a program that will allow you communication with the devices. One good example of such program is [ESPlorer](https://esp8266.ru/esplorer/).
-- Add relevant data for WiFi connection and MQTT broker in config.txt
-- Line that contain domain information in config.txt file, needs to contain the domain where dashboard will be hosted
-- Once the device is connected to the computer with a cable, and the ESPlorer is running, you could upload these [init.lua](https://github.com/ugljanin/iot-executor/blob/master/esp8266/init.lua) and [config.txt](https://github.com/ugljanin/iot-executor/blob/master/esp8266/config.txt) to your device.
+- Once the device is connected to the computer with a cable, and the ESPlorer is running, you will see the message on ESPlorer console that the device is formating, which means none of the files will exist on it.
+- Add relevant data for WiFi connection and MQTT broker in config.txt stored at folder *esp8266*. Line that contain domain information in config.txt file, needs to contain the domain where dashboard will be hosted.
+- You should upload both files, namely [init.lua](https://github.com/ugljanin/iot-executor/blob/master/esp8266/init.lua) and [config.txt](https://github.com/ugljanin/iot-executor/blob/master/esp8266/config.txt) to your device.
+
+### Video demo
+
+Detailed introduction on how to setup your device, install firmware, upload framework, work with the IoT Executor is presented [here](https://www.youtube.com/watch?v=CKHdBwNI1V8).
 
 ### Configuring the dashboard
 
@@ -51,6 +56,7 @@ Once the devices are registered, you can create multiple scripts with the code t
 It is important not to use cpu blocking functions such as tmr.delay() but to use alarm instead, and to avoid infinite loops, as they could block the script.
 
 After adding the scripts (mutations), they could be assigned to any device. If the device is running, and is connected to WiFi and MQTT broker, it will receive signal that the update is pending, it will stop current execution, download and compile new code and restart. After restarting the device will have new function as per the engineer has defined.
+
 ## Screenshots
 
 ### List of registered devices

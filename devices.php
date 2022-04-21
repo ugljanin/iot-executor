@@ -95,7 +95,7 @@ if ($_GET['action'] == 'list') {
     <div class="container">
         <h4>List of managed devices
             <?php
-            if ($_SESSION['role'] == 'manager') {
+            if ($_SESSION['role'] == 'engineer') {
                 echo "<a href='devices.php?action=add&newdevice=1' class='btn btn-danger pull-right' role='button'>Add new device</a>";
             }
             ?>
