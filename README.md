@@ -35,6 +35,9 @@ For Windows, I used [NodeMCU flasher](https://github.com/nodemcu/nodemcu-flasher
 
 Detailed introduction on how to setup your device, install firmware, upload framework, work with the IoT Executor is presented [here](https://www.youtube.com/watch?v=CKHdBwNI1V8).
 
+[![Video demo](https://img.youtube.com/vi/CKHdBwNI1V8/0.jpg)](https://www.youtube.com/watch?v=CKHdBwNI1V8)
+
+
 ### Configuring the dashboard
 
 This is web-based dashboard, and to run it you need hosting with php (>7.4) and mysql and a composer.
