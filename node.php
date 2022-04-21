@@ -39,7 +39,7 @@ if (isset($_GET['update'])) {
     $sth1->execute();
     $fetch1 = $sth1->fetch(PDO::FETCH_ASSOC);
 
-    $sql = "UPDATE mutations_log SET status='Activated', mutation_date=now() WHERE emid='$fetch1[emid]'";
+    $sql = "UPDATE mutations_log SET status='Activated', date=now() WHERE emid='$fetch1[emid]'";
     $db->exec($sql);
 
     $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
