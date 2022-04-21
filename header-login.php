@@ -8,16 +8,16 @@
         <title>Login to IoT Executor</title>
 
     <!-- Bootstrap -->
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
     <!-- NProgress -->
-    <link href="/css/nprogress.css" rel="stylesheet">
+    <link href="/assets/css/nprogress.css" rel="stylesheet">
     <!-- Animate.css -->
-    <link href="/css/animate.min.css" rel="stylesheet">
+    <link href="/assets/css/animate.min.css" rel="stylesheet">
 
     <!-- Custom Theme Style -->
-    <link href="/css/custom.min.css" rel="stylesheet">
+    <link href="/assets/css/custom.min.css" rel="stylesheet">
 
 
     </head>

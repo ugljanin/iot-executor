@@ -22,7 +22,7 @@ $filename=basename($_SERVER['PHP_SELF']);
     <link href="/assets/css/custom.min.css" rel="stylesheet">
 
     <!-- jQuery -->
-    <script src="/js/jquery.min.js"></script>
+    <script src="/assets/js/jquery.min.js"></script>
 </head>
 
 <body>
