@@ -221,35 +221,28 @@ if ( $_GET['action'] == 'mutations' ) {
                 echo "<input type='hidden' value=$nodeIdUpd name='id' />";
             ?>
             <div class='form-group'>
-                <label class='col-md-4 control-label' for='Node name'>Node name</label>
-                <div class='col-md-4'>
+                <label class='col-md-2 control-label' for='Node name'>Node name</label>
+                <div class='col-md-10'>
                     <input id='Nname' name='Nname' type='text' placeholder='Enter a node name' class='form-control input-md' value='<?php echo isset($r_name) ? $r_name : ''; ?>'>
 
                 </div>
             </div>
             <div class='form-group'>
-                <label class='col-md-4 control-label' for='description'>Node description</label>
-                <div class='col-md-4'>
+                <label class='col-md-2 control-label' for='description'>Node description</label>
+                <div class='col-md-10'>
                     <textarea class='form-control' id='Ndesc' name='Ndesc' placeholder='Enter a description'><?php echo isset($r_desc) ? $r_desc : ''; ?></textarea>
                 </div>
             </div>
             <div class='form-group'>
-                <label class='col-md-4 control-label' for='chipid'>ChipID</label>
-                <div class='col-md-4'>
+                <label class='col-md-2 control-label' for='chipid'>ChipID</label>
+                <div class='col-md-10'>
                     <input id='chipid' name='chipid' type='text' placeholder='Place the ChipID of the esp node' class='form-control input-md' value='<?php echo isset($r_chipid) ? $r_chipid : ''; ?>' <?php if (isset($_GET['id'])) echo 'readonly'; ?>>
-
                 </div>
             </div>
-            <button id='submit' name='submit' class='btn btn-danger pull-right'>Submit</button>
-        </form>
-    </div>
-
     <?php
-    if (isset($_GET['editor'])) {
+    if (isset($_GET['id'])) {
 
-        $fileId = $_GET['editor'];
-
-        $sql = "SELECT * FROM data WHERE id=$fileId";
+        $sql = "SELECT * FROM data WHERE esp_id=$nodeIdUpd";
         $sth = $db->prepare($sql);
         $sth->execute();
         $result = $sth->fetch(PDO::FETCH_ASSOC);
@@ -262,28 +255,20 @@ if ( $_GET['action'] == 'mutations' ) {
         $file = fopen($fn, "a+");
         $size = filesize($fn);
         $text = fread($file, $size);
-
         fclose($file);
+        ?>
+        <!-- Textarea -->
+        <div class='form-group'>
+            <label class='col-md-2 control-label' for='chipid'>Code assigned to the device</label>
+            <div class='col-md-10'>
+            <textarea class='form-control' id='fileEditor' readonly name='fileEditor_data' style='min-width: 100%' rows='10'><?php echo $text;?></textarea>
+            </div>
+        </div>
 
-
-        echo " <div class='container'>
-      <br /> <br />
-        <form class='form-horizontal' action='?files=$r_espid' method='POST' enctype='multipart/form-data'>
-        <h4>Online file editor - $r_filename
-        <button id='submit' name='submit' class='btn btn-danger pull-right'>Modify</button></h4><hr>
-
-                <!-- Textarea -->
-                <div class='form-group'>
-                  <div class='col-md-12'>
-                    <textarea class='form-control' id='fileEditor' name='fileEditor_data' style='min-width: 100%' rows='10'>$text</textarea>
-                  </div>
-                </div>";
-
-        echo "<input type='hidden' value=$fileId name='fileEditor_id' />";
-        echo "
-
-            </form>
-    </div>";
+        <button id='submit' name='submit' class='btn btn-danger pull-right'>Submit</button>
+        </form>
+    </div>
+    <?php
     }
 } else if ($_GET['action'] == 'save') {
     $chipid   = $_POST['chipid'];
