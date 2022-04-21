@@ -149,53 +149,52 @@ if ( $_GET['action'] == 'mutations' ) {
 } else if ($_GET['action'] == 'add') {
     if (isset($_GET['id'])) {
 
-        $node_id = $_GET['id'];
+        $id = $_GET['id'];
 
-        $stmt = $db->prepare("SELECT * FROM devices WHERE id= :id");
-        $stmt->execute(['id' => $node_id]);
+        $stmt = $db->prepare( 'SELECT * FROM devices WHERE id = :id' );
+        $stmt->execute( [ 'id' => $id ] );
 
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch( PDO::FETCH_ASSOC );
 
-        $r_name   = $result['name'];
-        $r_desc   = $result['description'];
+        $r_name    = $result['name'];
+        $r_desc    = $result['description'];
         $r_node_id = $result['node_id'];
     }
     ?>
     <div class='container'>
         <form class='form-horizontal' action='devices.php?action=save' method='POST'>
             <?php
-            if (isset($node_id))
-                echo "<input type='hidden' value=$node_id name='id' />";
+            if ( isset( $id ) )
+                echo "<input type='hidden' value=$id name='id' />";
             ?>
             <div class='form-group'>
                 <label class='col-md-2 control-label' for='Node name'>Node name</label>
                 <div class='col-md-10'>
-                    <input id='Nname' name='Nname' type='text' placeholder='Enter a node name' class='form-control input-md' value='<?php echo isset($r_name) ? $r_name : ''; ?>'>
+                    <input id='name' name='name' type='text' placeholder='Enter a node name' class='form-control input-md' value='<?php echo isset($r_name) ? $r_name : ''; ?>'>
 
                 </div>
             </div>
             <div class='form-group'>
                 <label class='col-md-2 control-label' for='description'>Node description</label>
                 <div class='col-md-10'>
-                    <textarea class='form-control' id='Ndesc' name='Ndesc' placeholder='Enter a description'><?php echo isset($r_desc) ? $r_desc : ''; ?></textarea>
+                    <textarea class='form-control' id='desc' name='desc' placeholder='Enter a description'><?php echo isset( $r_desc ) ? $r_desc : ''; ?></textarea>
                 </div>
             </div>
             <div class='form-group'>
                 <label class='col-md-2 control-label' for='node_id'>node_id</label>
                 <div class='col-md-10'>
-                    <input id='node_id' name='node_id' type='text' placeholder='Place the node_id of the devices node' class='form-control input-md' value='<?php echo isset($r_node_id) ? $r_node_id : ''; ?>' <?php if (isset($_GET['id'])) echo 'readonly'; ?>>
+                    <input id='node_id' name='node_id' type='text' placeholder='Place the node_id of the devices node' class='form-control input-md' value='<?php echo isset( $r_node_id ) ? $r_node_id : ''; ?>' <?php echo isset( $_GET['id'] ) ? 'readonly' : ''; ?>>
                 </div>
             </div>
     <?php
-    if (isset($_GET['id'])) {
+    if ( isset( $_GET['id'] ) ) {
 
-        $stmt = $db->prepare('SELECT * FROM data WHERE node_id = :node_id');
-        $stmt->execute(['node_id'=>$node_id ]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = $db->prepare( 'SELECT * FROM data WHERE deviceid = :deviceid' );
+        $stmt->execute( [ 'deviceid' => $id ] );
+        $result = $stmt->fetch( PDO::FETCH_ASSOC );
 
         $r_folder   = $result['folder'];
         $r_filename = $result['filename'];
-        $r_node_id    = $result['node_id'];
 
         $fn   = "uploads/" . $r_folder . "/" . $r_filename;
         $file = fopen($fn, "a+");
@@ -217,15 +216,16 @@ if ( $_GET['action'] == 'mutations' ) {
     <?php
     }
 } else if ($_GET['action'] == 'save') {
+
     $node_id   = $_POST['node_id'];
-    $node_desc = $_POST['Ndesc'];
-    $node_name = $_POST['Nname'];
+    $node_desc = $_POST['desc'];
+    $node_name = $_POST['name'];
 
     if (isset($_POST['id'])) {
         $id = $_POST['id'];
 
-        $stmt = $db->prepare('UPDATE devices SET `name` = :node_name, `description` = :node_desc, `node_id` = :node_id WHERE id = :node_id');
-        $stmt->execute(['node_name' => $node_name, 'node_desc'=> $node_desc, 'node_id'=>$node_id, 'id'=>$id ]);
+        $stmt = $db->prepare('UPDATE devices SET `name` = :node_name, `description` = :node_desc, `node_id` = :node_id WHERE id = :deviceid');
+        $stmt->execute(['node_name' => $node_name, 'node_desc'=> $node_desc, 'node_id'=>$node_id, 'deviceid'=>$id ]);
 
     } else {
         $stmt = $db->prepare('INSERT INTO devices (name, description, node_id) VALUES ( :node_name, :node_desc, :node_id)');
@@ -242,7 +242,7 @@ if ( $_GET['action'] == 'mutations' ) {
     if ( !file_exists($path . $node_id) ) {
         mkdir( $path . $node_id, 0755, true );
         $myfile = fopen($path . $node_id . "/boot.lua", "w") or die("Unable to open file!");
-        $txt = "print(\"Hello world\")";
+        $txt = "print(\"IoT Executor\")";
         fwrite($myfile, $txt);
         fclose($myfile);
     }
@@ -261,7 +261,7 @@ if ( $_GET['action'] == 'mutations' ) {
 
         $_SESSION["messagetype"] = "danger";
         $_SESSION["message"] = "Device is not created";
-        // redirect('devices.php?action=list');
+        redirect('devices.php?action=list');
     }
 } else if ($_GET['action'] == 'saveboot') {
     $actionid = $_POST['actionid'];
