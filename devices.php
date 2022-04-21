@@ -7,8 +7,6 @@ include "header.php";
 
 use PhpMqtt\Client\MqttClient;
 
-// $valid_formats = array("lua", "txt", "mono", "html", "htm");
-// $max_file_size = 1024 * 100; //100 kb
 $path = "uploads/"; // Upload directory
 $count = 0;
 
@@ -246,8 +244,8 @@ if ( $_GET['action'] == 'mutations' ) {
     $node_id_fetch = $sth->fetch(PDO::FETCH_ASSOC);
     $node_id = $node_id_fetch['id'];
 
-    if (!file_exists($path . $node_id)) {
-        mkdir($path . $node_id, 0755, true);
+    if ( !file_exists($path . $node_id) ) {
+        mkdir( $path . $node_id, 0755, true );
         $myfile = fopen($path . $node_id . "/boot.lua", "w") or die("Unable to open file!");
         $txt = "print(\"Hello world\")";
         fwrite($myfile, $txt);
@@ -350,7 +348,7 @@ if ( $_GET['action'] == 'mutations' ) {
     if (isset($_GET['id'])) {
         $node_id = $_GET['id'];
 
-        $stmt = $db->prepare("SELECT * FROM esp WHERE id= :id");
+        $stmt = $db->prepare("SELECT * FROM esp WHERE id = :id");
         $stmt->execute(['id' => $node_id]);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);

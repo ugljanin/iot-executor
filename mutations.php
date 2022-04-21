@@ -6,7 +6,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'list') {
 
 	$title = "List of created mutations";
 	include "header.php";
-	if ($_SESSION['role'] == 'engineer') {
+	if ( $_SESSION['role'] == 'engineer' ) {
 ?>
 		<a href="mutations.php?action=create" class="btn btn-primary" role="button">Create mutation</a>
 	<?php

@@ -18,3 +18,5 @@ require_once("inc/functions.php");
 require_once("inc/config.php");
 require_once("inc/mysql.php");
 require_once("inc/mqtt.php");
+
+check_user();
