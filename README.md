@@ -59,9 +59,12 @@ It is important not to use cpu blocking functions such as tmr.delay() but to use
 
 After adding the scripts (mutations), they could be assigned to any device. If the device is running, and is connected to WiFi and MQTT broker, it will receive signal that the update is pending, it will stop current execution, download and compile new code and restart. After restarting the device will have new function as per the engineer has defined.
 
+<<<<<<< HEAD
 ## Triggering mutation using REST API
 We provide REST API that allows you to trigger mutation by sending POST request to `request.php` file with two parameters, namely `mutationid` and `nodeid`, which are identifiers of specific ESP8266 device, and the mutation that are both registered in the Dashboard. Once the server receives the request, it will trigger mutation the same way as it would do if the Dashboard is used. This REST API allows using IoT Executor with external services.
 
+=======
+>>>>>>> 10d1f28 (Improving instructions)
 ## Screenshots
 
 ### List of registered devices
