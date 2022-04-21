@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `esp`
+-- Database: `devices`
 --
 
 -- --------------------------------------------------------
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `data` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `folder` varchar(50) COLLATE utf8_bin NOT NULL,
   `filename` varchar(50) COLLATE utf8_bin NOT NULL,
-  `esp_id` int(10) NOT NULL,
+  `node_id` int(10) NOT NULL,
   `boot` int(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=2 ;
@@ -39,19 +39,19 @@ CREATE TABLE IF NOT EXISTS `data` (
 -- Dumping data for table `data`
 --
 
-INSERT INTO `data` (`id`, `folder`, `filename`, `esp_id`, `boot`) VALUES
+INSERT INTO `data` (`id`, `folder`, `filename`, `node_id`, `boot`) VALUES
 (1, '8775412', 'script2.lua', 18, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `esp`
+-- Table structure for table `devices`
 --
 
-CREATE TABLE IF NOT EXISTS `esp` (
+CREATE TABLE IF NOT EXISTS `devices` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name` varchar(30) COLLATE utf8_bin NOT NULL,
-  `chip_id` varchar(20) COLLATE utf8_bin NOT NULL,
+  `node_id` varchar(20) COLLATE utf8_bin NOT NULL,
   `description` varchar(500) COLLATE utf8_bin NOT NULL,
   `update` int(11) NOT NULL DEFAULT '0',
   `heartbeat` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -59,10 +59,10 @@ CREATE TABLE IF NOT EXISTS `esp` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=19 ;
 
 --
--- Dumping data for table `esp`
+-- Dumping data for table `devices`
 --
 
-INSERT INTO `esp` (`id`, `name`, `chip_id`, `description`, `update`, `heartbeat`) VALUES
+INSERT INTO `devices` (`id`, `name`, `node_id`, `description`, `update`, `heartbeat`) VALUES
 (18, 'testing node', '8775412', 'very first testing node', 0, '2016-10-21 18:07:43');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

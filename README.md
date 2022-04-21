@@ -2,7 +2,7 @@
 # IoT Executor - IoT connector
 
 This project is a part of the PhD thesis where I use ESP8266 microcontrollers and controll them with the web-based dashboard.
-The dashboard allows the user to register devices using their chipid, and create programs (aka mutations) that will run on the device.
+The dashboard allows the user to register devices using their node_id, and create programs (aka mutations) that will run on the device.
 The devices are first loaded with basic sceleton that provides communication with this dashboard, and once the user assigns the script to specific ESP8266 device, it will load
 notify that device about pending update, the device will stop current execution, restart, download the new code and compile it, and at the end start with new code.
 
@@ -44,7 +44,7 @@ This is web-based dashboard, and to run it you need hosting with php (>7.4) and 
 You also need publically accessable domain, because it will be used so that devices could download the script when ready.
 
 - Run `composer install` to install libraries required to work with MQTT.
-- Import [database](https://github.com/ugljanin/iot-executor/blob/master/sql/esp.sql) on your MySQL server
+- Import [database](https://github.com/ugljanin/iot-executor/blob/master/sql/devices.sql) on your MySQL server
 - Add mysql server data and mqtt broker data in [config.php](https://github.com/ugljanin/iot-executor/blob/master/inc/config.php) file
 
 ## Access the dashboard
@@ -53,7 +53,7 @@ When you access your dashboard, there are 2 types of users. Manager and Engineer
 
 ## Working with devices
 
-At first you need to register the devices with NodeMCU chipid, that will be used for its identification.
+At first you need to register the devices with NodeMCU node_id, that will be used for its identification.
 Once the devices are registered, you can create multiple scripts with the code that will be assigned to any devices.
 
 It is important not to use cpu blocking functions such as tmr.delay() but to use alarm instead, and to avoid infinite loops, as they could block the script.

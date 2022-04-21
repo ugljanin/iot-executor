@@ -5,7 +5,7 @@ function LoadX()
         local sF = file.read()
         --print("setting: "..sF)
         file.close()
-        for k, v in string.gmatch(sF, "([%w.]+)=([%S ]+)") do    
+        for k, v in string.gmatch(sF, "([%w.]+)=([%S ]+)") do
             s[k] = v
             print(k .. ": " .. v)
         end
@@ -20,22 +20,22 @@ function SaveX(sErr)
     file.open("config.txt","w+")
     for k, v in pairs(s) do
         file.writeline(k .. "=" .. v)
-    end                
+    end
     file.close()
     collectgarbage()
 end
 
 -- If there is a script pending for update stop previously running script
-function checkIfScriptUpdateIsPending()    
+function checkIfScriptUpdateIsPending()
     print("Checking if there is an update pending.")
-    
+
     -- Check if there is some update pending
     http.get("http://"..s.domain.."/node.php?id="..id.."&update", nil, function(code, data)
         if (code < 0) then
             print("HTTP request failed")
             node.restart()
         else
-            if string.find(data, "UPDATE")~=nil then 
+            if string.find(data, "UPDATE")~=nil then
                 print("ako ima UPDARE http://"..s.domain.."/node.php?id="..id.."&update")
                 downloadAndCompile();
             else
@@ -59,7 +59,7 @@ function downloadAndCompile()
     filename = "boot.lua"
     file.remove(filename);
     file.open(filename, "w+")
-    
+
     -- Download new mutation code, it must be set to Force update in the dashboard.
     http.get("http://"..s.domain.."/uploads/"..id.."/"..filename.."", nil, function(code, data)
         if (code < 0) then
@@ -81,13 +81,13 @@ function downloadAndCompile()
             end
             -- Save path for startup script
             s.boot = "boot.lc"
-            SaveX("No error") 
+            SaveX("No error")
             node.restart()
         end
-    end)   
+    end)
 end
 
-id = node.chipid()
+id = node.node_id()
 print ("nodeID is: "..id)
 
 LoadX()
@@ -103,23 +103,23 @@ if (s.broker~="") then
 
     iFail = 20 -- trying to connect to AP in 20sec, if not then reboot
     local mytimer = tmr.create()
-    
+
     mytimer:register(1000, 1, function (t)
         iFail = iFail -1
         if (iFail == 0) then
             SaveX("Could not access WiFi: Zzz"..s.ssid)
             node.restart()
-        end      
-       
+        end
+
         if wifi.sta.getip ( ) == nil then
             print(s.ssid..": "..iFail)
         else
             print ("Init NodeMCU IP: " .. wifi.sta.getip())
-            
-            m = mqtt.Client(node.chipid(), 120, s.mqttuser, s.mqttpass)
-            
+
+            m = mqtt.Client(node.node_id(), 120, s.mqttuser, s.mqttpass)
+
             -- Checking if there is script available when running for the first time
-            m:connect(s.broker, s.port, false , function(conn) 
+            m:connect(s.broker, s.port, false , function(conn)
                 print("Checking if there is script available when running for the first time")
                 print("Connecting to MQTT broker.")
                 m:subscribe("/mutation/update", 0, function(conn)
@@ -127,31 +127,31 @@ if (s.broker~="") then
                     checkIfScriptUpdateIsPending()
                 end)
 
-            end) 
+            end)
 
             -- React on the request from IoT executor
-            m:on("message", function(conn, topic, data) 
+            m:on("message", function(conn, topic, data)
                 print("Message is received from IoT executor while the device is running")
                 if data ~= nil then
                     if tonumber(data) == id then
                         print("-----------")
                         print("Stoping previously running script and restarting the device on message ...")
                         print("-----------")
-                    
+
                         s.boot=nil
                         SaveX()
                         node.restart()
                     end
                 end
             end)
-                
+
             -- tmr.stop (1)
             t:unregister()
         end
     end)
-    
+
     mytimer:start()
-    
+
 else
-    print("Please add all the parameters in config.txt file")   
-end 
+    print("Please add all the parameters in config.txt file")
+end
