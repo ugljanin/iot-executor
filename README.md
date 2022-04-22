@@ -51,7 +51,7 @@ You also need publically accessable domain, because it will be used so that devi
 
 When you access your dashboard, there are 2 types of users. Manager and Engineer. To access any of them you will use `manager`/`manager` or `engineer`/`engineer` username and password.
 
-## Working with devices
+### Working with devices
 
 At first you need to register the devices with NodeMCU node_id, that will be used for its identification.
 Once the devices are registered, you can create multiple scripts with the code that will be assigned to any devices.
