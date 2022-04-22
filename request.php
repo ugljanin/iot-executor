@@ -3,9 +3,9 @@ require("fns.php");
 
 use PhpMqtt\Client\MqttClient;
 
-if (isset($_GET['mutationid']) && isset($_GET['nodeid'])) {
-    $mutationid = $_GET['mutationid'];
-    $node_id    = $_GET['nodeid'];
+if (isset($_POST['mutationid']) && isset($_POST['nodeid'])) {
+    $mutationid = $_POST['mutationid'];
+    $node_id    = $_POST['nodeid'];
 
     $sql = "SELECT mutations.name, mutations.code,devices.node_id,devices.id, mutations.mutationid, mutations_actions.actionid, mutations_actions.boot
         FROM mutations,mutations_actions,devices
