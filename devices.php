@@ -70,26 +70,26 @@ if ($_GET['action'] == 'list') {
 <?php
 }
 if ( $_GET['action'] == 'mutations' ) {
-
-    if( isset( $_GET['id'] ) ) {
-        $id = $_GET['id'];
-
-        ?>
-        <div class="container">
+    $id = $_GET['id'];
+?>
+    <div class="container">
+        <h4>Select mutation script from the list below, in order to be booted on the selected device.
             <?php
             if ($_SESSION['role'] == 'engineer') {
                 echo "<a href='devices.php?action=addmutation&id=$id' class='btn btn-primary pull-right' role='button'>Add additional mutation to list</a>";
             }
             ?>
-        <?php
+        </h4>
+        <form action="devices.php?action=saveboot" method="post">
+            <input type="hidden" name="node_id" value="<?php echo $id; ?>">
+            <?php
+            $stmt = $db->prepare('SELECT mutations.name, mutations.mutationid, mutations_actions.actionid, mutations_actions.boot
+            FROM mutations,mutations_actions
+            where mutations.mutationid=mutations_actions.mutationid
+            and mutations_actions.node_id = :node_id
+            ORDER BY actionid DESC');
 
-        $stmt = $db->prepare('SELECT mutations.name, mutations.mutationid, mutations_actions.actionid, mutations_actions.boot
-        FROM mutations,mutations_actions
-        where mutations.mutationid=mutations_actions.mutationid
-        and mutations_actions.deviceid = :deviceid
-        ORDER BY actionid DESC');
-        $stmt->execute(['deviceid' => $id]);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->execute(['node_id' => $id]);
 
         if( count( $result ) == 0 ) {
             echo '<h2>No mutation code is assigned to the device, please assign it first</h2>';
@@ -98,47 +98,43 @@ if ( $_GET['action'] == 'mutations' ) {
          ?>
             <h4>Select mutation script from the list below, in order to be booted on the selected device, or add additional one</h4>
 
-            <form action="devices.php?action=saveboot" method="post">
-                <input type="hidden" name="id" value="<?php echo $id; ?>">
-                <?php
-                foreach ($result as $devices) {
+            foreach ($result as $devices) {
 
-                    if ($devices['boot'] == 1) {
-                        $checked = "checked";
-                    } else {
-                        $checked = "";
-                    }
-                ?>
-                    <div class="radio">
-                        <label><input type="radio" name="actionid" <?php echo $checked; ?> value="<?php echo $devices['actionid']; ?>"><?php echo $devices['name']; ?></label>
-                    </div>
-                <?php
+                if ($devices['boot'] == 1) {
+                    $checked = "checked";
+                } else {
+                    $checked = "";
                 }
-                echo "<input type=\"submit\" class='btn btn-success pull-right' role='button' value='Save'>";
-                ?>
-            </form>
-        </div>
+            ?>
+                <div class="radio">
+                    <label><input type="radio" name="actionid" <?php echo $checked; ?> value="<?php echo $devices['actionid']; ?>"><?php echo $devices['name']; ?></label>
+                </div>
+            <?php
+            }
+            echo "<input type=\"submit\" class='btn btn-success pull-right' role='button' value='Save'>";
+            ?>
+        </form>
     </div>
     <?php
     }
 } else if ($_GET['action'] == 'addmutation' && $_SESSION['role'] == 'engineer' ) {
     if (isset($_GET['id'])) {
 
-        $id = $_GET['id'];
+        $node_id = $_GET['id'];
 
-        $stmt = $db->prepare("SELECT * FROM devices WHERE id = :id");
-        $stmt->execute(['id' => $id]);
+        $stmt = $db->prepare("SELECT * FROM devices WHERE id= :id");
+        $stmt->execute(['id' => $node_id]);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $r_name    = $result['name'];
-        $r_desc    = $result['description'];
+        $r_name   = $result['name'];
+        $r_desc   = $result['description'];
         $r_node_id = $result['node_id'];
     }
 ?>
     <div class='container'>
         <form class='form-horizontal' action='devices.php?action=savemutation' method='POST'>
-            <input type='hidden' value='<?php echo $id; ?>' name='id' />
+            <input type='hidden' value='<?php echo $node_id; ?>' name='node_id' />
             <div class="form-group">
                 <label for="text">Select mutation:</label>
                 <select name="mutationid" class="form-control">
@@ -203,33 +199,28 @@ if ( $_GET['action'] == 'mutations' ) {
         $stmt->execute( [ 'deviceid' => $id ] );
         $result = $stmt->fetch( PDO::FETCH_ASSOC );
 
-        if( $result ) {
-            $r_folder   = $result['folder'];
-            $r_filename = $result['filename'];
-            if( file_exists("uploads/" . $r_folder . "/" . $r_filename) ) {
-                $fn   = "uploads/" . $r_folder . "/" . $r_filename;
-                $file = fopen($fn, "a+");
-                $size = filesize($fn);
-                $text = fread($file, $size);
-                fclose($file);
-            }
-            ?>
-            <!-- Textarea -->
-            <div class='form-group'>
-                <label class='col-md-2 control-label' for='node_id'>Code assigned to the device</label>
-                <div class='col-md-10'>
-                <textarea class='form-control' id='fileEditor' readonly name='fileEditor_data' style='min-width: 100%' rows='10'><?php echo $text;?></textarea>
-                </div>
-            </div>
-            <?php
-        }
+        $r_folder   = $result['folder'];
+        $r_filename = $result['filename'];
 
-    }
-    ?>
-    <button id='submit' name='submit' class='btn btn-danger pull-right'>Submit</button>
+        $fn   = "uploads/" . $r_folder . "/" . $r_filename;
+        $file = fopen($fn, "a+");
+        $size = filesize($fn);
+        $text = fread($file, $size);
+        fclose($file);
+        ?>
+        <!-- Textarea -->
+        <div class='form-group'>
+            <label class='col-md-2 control-label' for='node_id'>Code assigned to the device</label>
+            <div class='col-md-10'>
+            <textarea class='form-control' id='fileEditor' readonly name='fileEditor_data' style='min-width: 100%' rows='10'><?php echo $text;?></textarea>
+            </div>
+        </div>
+
+        <button id='submit' name='submit' class='btn btn-danger pull-right'>Submit</button>
         </form>
     </div>
     <?php
+    }
 } else if ($_GET['action'] == 'save') {
 
     $node_id   = $_POST['node_id'];
@@ -251,8 +242,8 @@ if ( $_GET['action'] == 'mutations' ) {
     $sth = $db->prepare($sql);
     $sth->execute([ 'node_id'=>$node_id ]);
 
-    $result = $sth->fetch(PDO::FETCH_ASSOC);
-    $deviceid=$result['id'];
+    $node_id_fetch = $sth->fetch(PDO::FETCH_ASSOC);
+    $node_id = $node_id_fetch['id'];
 
     if ( !file_exists($path . $node_id) ) {
         mkdir( $path . $node_id, 0755, true );
@@ -262,8 +253,8 @@ if ( $_GET['action'] == 'mutations' ) {
         fclose($myfile);
     }
 
-    $sth = $db->prepare('INSERT INTO data ( folder, filename, deviceid ) VALUES ( :node_id, :filename, :deviceid )');
-    $sth->execute([ 'node_id'=>$node_id, 'filename'=>'boot.lua', 'deviceid'=>$deviceid ]);
+    $sql = "INSERT INTO data (folder,filename,node_id) VALUES ('$node_id','boot.lua','$node_id')";
+    $db->exec($sql);
 
     if ( $sth ) {
         echo '<p>Device added in database</p>';
@@ -280,17 +271,17 @@ if ( $_GET['action'] == 'mutations' ) {
     }
 } else if ($_GET['action'] == 'saveboot') {
     $actionid = $_POST['actionid'];
-    $id       = $_POST['id'];
+    $node_id = $_POST['node_id'];
 
-    $stmt = $db->prepare('SELECT mutations.name, mutations.code,devices.node_id, mutations.mutationid, mutations_actions.actionid,
-    mutations_actions.boot
+    $sql = "SELECT mutations.name, mutations.code,devices.node_id, mutations.mutationid, mutations_actions.actionid,mutations_actions.node_id, mutations_actions.boot
     FROM mutations,mutations_actions,devices
     where mutations.mutationid=mutations_actions.mutationid
-    and mutations_actions.deviceid = devices.id
-    and mutations_actions.actionid = :actionid
-    ORDER BY actionid DESC');
-    $stmt->execute([ 'actionid' => $actionid ]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    and mutations_actions.node_id=devices.id
+    and mutations_actions.actionid='" . $actionid . "'
+    ORDER BY actionid DESC";
+    $sth = $db->prepare($sql);
+    $sth->execute();
+    $result = $sth->fetch(PDO::FETCH_ASSOC);
 
     $fn = "uploads/" . $result['node_id'] . "/boot.lua";
     $file = fopen($fn, "w");
@@ -298,20 +289,20 @@ if ( $_GET['action'] == 'mutations' ) {
     fclose($file);
 
     //unselect all
-    $stmt = $db->prepare('UPDATE mutations_actions SET boot=0 where deviceid = :deviceid');
-    $stmt->execute([ 'deviceid'=>$id ]);
+    $sql = "UPDATE mutations_actions SET boot=0 where node_id=$node_id";
+    $db->exec($sql);
 
     //select only the one from the form
     $stmt = $db->prepare('UPDATE mutations_actions SET `boot` = 1 where actionid = :actionid');
     $stmt->execute([ 'actionid'=>$actionid ]);
 
     //force update
-    $stmt = $db->prepare('UPDATE devices SET `update`=1 where id = :deviceid');
-    $stmt->execute([ 'deviceid'=>$id ]);
+    $sql = "UPDATE devices set `update`=1 where id='" . $node_id . "'";
+    $db->exec($sql);
 
     //log mutation as initial
-    $stmt = $db->prepare('insert into mutations_log (deviceid, mutationid, date, type, status) values ( :deviceid, :mutationid, :date, :init, :status )');
-    $stmt->execute([ 'deviceid'=>$id, 'mutationid'=>$result['mutationid'], 'date'=> date('Y-m-d H:i:s'), 'init'=>'init', 'status' => 'Pending']);
+    $sql = "insert into mutations_log (node_id, mutationid, mutation_date, type, status) values ('" . $node_id . "', '" . $result['mutationid'] . "','" . date('Y-m-d H:i:s') . "','init','Pending')";
+    $db->exec($sql);
 
     if ($stmt) {
         echo '<p>Mutation action boot is changed</p>';
@@ -323,20 +314,20 @@ if ( $_GET['action'] == 'mutations' ) {
 
         echo "Sent instruction for update \n";
 
-        redirect('devices.php?action=list');
+        redirect('devices.php?action=mutations&id=' . $node_id);
     } else {
         echo '<p>Mutation action boot is not changed</p>';
 
         $_SESSION["messagetype"] = "danger";
         $_SESSION["message"] = "Mutation action boot is not changed";
-        redirect('devices.php?action=list');
+        redirect('devices.php?action=mutations&id=' . $node_id);
     }
 } else if ($_GET['action'] == 'savemutation') {
     $mutationid = $_POST['mutationid'];
-    $id         = $_POST['id'];
+    $node_id    = $_POST['node_id'];
 
-    $stmt = $db->prepare('INSERT INTO mutations_actions (mutationid,deviceid) VALUES ( :mutationid, :deviceid)');
-    $stmt->execute([ 'mutationid'=> $mutationid, 'deviceid'=>$id ]);
+    $stmt = $db->prepare('INSERT INTO mutations_actions (mutationid,node_id) VALUES ( :mutationid, :node_id)');
+    $stmt->execute([ 'mutationid'=> $mutationid, 'node_id'=>$node_id ]);
 
     if ($stmt) {
         echo '<p>Mutation action added in database</p>';
@@ -351,10 +342,10 @@ if ( $_GET['action'] == 'mutations' ) {
     }
 } else if ($_GET['action'] == 'update') {
     if (isset($_GET['id'])) {
-        $id = $_GET['id'];
+        $node_id = $_GET['id'];
 
         $stmt = $db->prepare("SELECT * FROM devices WHERE id = :id");
-        $stmt->execute(['id' => $id]);
+        $stmt->execute(['id' => $node_id]);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -370,8 +361,8 @@ if ( $_GET['action'] == 'mutations' ) {
             echo "Sent instruction for update\n";
         }
 
-        $stmt = $db->prepare('UPDATE devices SET `update` = :val WHERE id = :deviceid');
-        $stmt->execute(['val' => $val, 'deviceid'=>$id ]);
+        $sql = "UPDATE devices SET `update`='$val' WHERE id=$node_id";
+        $db->exec($sql);
 
         if ( $stmt ) {
             echo "<p>Device update is {$message}</p>";
@@ -389,29 +380,20 @@ if ( $_GET['action'] == 'mutations' ) {
     }
 } else if ($_GET['action'] == 'delete') {
     if (isset($_GET['id'])) {
-        $id = $_GET['id'];
+        $node_id = $_GET['id'];
 
-        $stmt = $db->prepare("SELECT * FROM devices WHERE id = :id");
-        $stmt->execute(['id' => $id]);
+        $stmt = $db->prepare("SELECT * FROM devices WHERE id= :id");
+        $stmt->execute(['id' => $node_id]);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $node_id = $result['node_id'];
 
         $stmt = $db->prepare("DELETE FROM devices WHERE id = :id");
-        $stmt->execute(['id' => $id]);
+        $stmt->execute(['id' => $node_id]);
 
-        $stmt = $db->prepare("DELETE FROM mutations_actions WHERE deviceid = :id");
-        $stmt->execute(['id' => $id]);
-
-        $stmt = $db->prepare("DELETE FROM data WHERE deviceid = :id");
-        $stmt->execute(['id' => $id]);
-
-        if ( $stmt ) {
-            if(file_exists($path . $node_id . "/boot.lua")) {
-                unlink($path . $node_id . "/boot.lua");
-                rmdir($path . $node_id);
-            }
-
+        if ($stmt->execute()) {
+            unlink($path . $node_id . "/boot.lua");
+            rmdir($path . $node_id);
             echo '<p>Device is deleted</p>';
 
             $_SESSION["messagetype"] = "success";
