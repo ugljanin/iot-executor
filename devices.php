@@ -56,7 +56,7 @@ if ($_GET['action'] == 'list') {
                     else
                         echo "Force update";
                     echo "</a>&nbsp;";
-                    echo "<a href='devices.php?action=mutations&id=$devices[id]' class='btn-sm btn-success' role='button'>Mutations list</a>";
+                    echo "<a href='devices.php?action=mutations&id=$devices[id]' class='btn-sm btn-success' role='button'>Assigned reconfigurations</a>";
                     echo '</td>';
                     echo '<td>';
                     echo "<a href='devices.php?action=delete&id=$devices[id]' class='btn-sm btn-danger' role='button'>Delete</a>";
@@ -96,7 +96,7 @@ if ( $_GET['action'] == 'mutations' ) {
             exit();
         }
          ?>
-            <h4>Select mutation script from the list below, in order to be booted on the selected device, or add additional one</h4>
+            <h4>Select reconfiguration script from the list below, in order to be booted on the selected device, or add additional one</h4>
 
             foreach ($result as $devices) {
 
@@ -136,7 +136,7 @@ if ( $_GET['action'] == 'mutations' ) {
         <form class='form-horizontal' action='devices.php?action=savemutation' method='POST'>
             <input type='hidden' value='<?php echo $node_id; ?>' name='node_id' />
             <div class="form-group">
-                <label for="text">Select mutation:</label>
+                <label for="text">Select reconfiguration:</label>
                 <select name="mutationid" class="form-control">
                     <?php
                     $sqlc = "select * from mutations order by name asc";

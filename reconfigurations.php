@@ -4,11 +4,11 @@ check_user();
 
 if (isset($_GET['action']) && $_GET['action'] == 'list') {
 
-	$title = "List of created mutations";
+	$title = "List of created reconfigurations";
 	include "header.php";
 	if ( $_SESSION['role'] == 'engineer' ) {
 ?>
-		<a href="mutations.php?action=create" class="btn btn-primary" role="button">Create mutation</a>
+		<a href="reconfiguration.php?action=create" class="btn btn-primary" role="button">Create new reconfiguration</a>
 	<?php
 	}
 	?>
@@ -34,10 +34,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'list') {
 					echo "<td>{$mutations['mutationid']}</td>";
 					echo "<td><strong>{$mutations['name']}</strong></td>";
 					echo "<td>{$mutations['description']}</td>";
-					echo "<td><a href=\"mutations.php?action=viewcode&id={$mutations['mutationid']}\" class=\"btn btn-sm btn-success\">View code</a>";
-					echo "<a href=\"mutations.php?action=create&id={$mutations['mutationid']}\" class=\"btn btn-sm btn-primary\">Edit</a>";
+					echo "<td><a href=\"reconfiguration.php?action=viewcode&id={$mutations['mutationid']}\" class=\"btn btn-sm btn-success\">View source code</a>";
+					echo "<a href=\"reconfiguration.php?action=create&id={$mutations['mutationid']}\" class=\"btn btn-sm btn-primary\">Edit</a>";
 					if( $_SESSION['role'] == 'engineer' ) {
-						echo "<a href=\"mutations.php?action=delete&id={$mutations['mutationid']}\" class=\"btn btn-sm btn-danger\">Delete</a>";
+						echo "<a href=\"reconfiguration.php?action=delete&id={$mutations['mutationid']}\" class=\"btn btn-sm btn-danger\">Delete</a>";
 					}
 					echo "</td>";
 					echo "</tr>";
@@ -50,7 +50,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'list') {
 }
 if (isset($_GET['action']) && $_GET['action'] == 'viewcode') {
 
-	$title = "View code for mutation";
+	$title = "View source code";
 	include "header.php";
 
 	$id   = $_GET['id'];
@@ -65,8 +65,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'viewcode') {
 	echo '</pre>';
 }
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && $_SESSION['role'] == 'engineer') {
-	// Delete mutation
-	$title = "Detele mutation ";
+	// Delete reconfiguration
+	$title = "Detele reconfiguration ";
 	include "header.php";
 
 	if( isset($_GET['id'])) {
@@ -76,23 +76,23 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && $_SESSION['role'] =
 	}
 
 	if ($stmt) {
-		echo 'Mutation is deleted';
+		echo 'Code is deleted';
 
 		$_SESSION["messagetype"] = "success";
-		$_SESSION["message"]     = "Mutation is deleted";
+		$_SESSION["message"]     = "Code is deleted";
 
-		redirect('mutations.php?action=list');
+		redirect('reconfiguration.php?action=list');
 	} else {
-		echo 'Mutation is not deleted';
+		echo 'Code is not deleted';
 
 		$_SESSION["messagetype"] = "danger";
-		$_SESSION["message"]     = "Mutation is not deleted";
+		$_SESSION["message"]     = "Code is not deleted";
 
-		redirect('mutations.php?action=list');
+		redirect('reconfiguration.php?action=list');
 	}
 }
 if (isset($_GET['action']) && $_GET['action'] == 'create') {
-	$title = "Create mutation";
+	$title = "Create reconfiguration";
 
 	if(isset($_GET['id'])) {
 		$id = $_GET['id'];
@@ -105,9 +105,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'create') {
 	include "header.php";
 ?>
 	<div class="row-flud">
-		<form action="mutations.php?action=save" method="post">
+		<form action="reconfiguration.php?action=save" method="post">
 			<input type="hidden" name="mutationid" value="<?php echo isset($id) ? $id : ''; ?>">
-			<h2>Content of Mutation</h2>
+			<h2>Content of Reconfiguration</h2>
 			<div class="row">
 
 				<div class='col-sm-12'>
@@ -178,19 +178,19 @@ if (isset($_GET['action']) && $_GET['action'] == 'save') {
 	$stmt->execute($data);
 
 	if ($stmt) {
-		echo '<p>Mutation added in the database</p>';
+		echo '<p>Reconfiguration added in the database</p>';
 
 		$_SESSION["messagetype"] = "success";
-		$_SESSION["message"]     = "Mutation is created";
+		$_SESSION["message"]     = "Reconfiguration is created";
 
-		redirect('mutations.php?action=list');
+		redirect('reconfiguration.php?action=list');
 	} else {
-		echo '<p>Mutation is not added in the database</p>';
+		echo '<p>Code is not added in the database</p>';
 
 		$_SESSION["messagetype"] = "danger";
-		$_SESSION["message"]     = "Mutation is not created";
+		$_SESSION["message"]     = "Code is not created";
 
-		redirect('mutations.php?action=list');
+		redirect('reconfiguration.php?action=list');
 	}
 }
 
