@@ -121,6 +121,59 @@ if ( $_GET['action'] == 'mutations' ) {
     </div>
     <?php
     }
+} else if ( $_GET['action'] == 'capabilities' ) {
+
+    if( isset( $_GET['id'] ) ) {
+        $id = $_GET['id'];
+
+        ?>
+        <div class="container">
+            <?php
+            if ($_SESSION['role'] == 'engineer') {
+                echo "<a href='devices.php?action=addcapability&id=$id' class='btn btn-primary pull-right' role='button'>Add capability to list</a>";
+            }
+            ?>
+        <?php
+
+        $stmt = $db->prepare('SELECT capabilities.name, capabilities.capabilityid, device_capabilities.deviceid
+        FROM devices, capabilities, device_capabilities
+        where device_capabilities.capabilityid = capabilities.capabilityid
+        and device_capabilities.deviceid = devices.id
+        and device_capabilities.deviceid = :deviceid
+        ORDER BY actionid DESC');
+        $stmt->execute(['deviceid' => $id]);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if( count( $result ) == 0 ) {
+            echo '<h2>No capabilities are assigned to the device, please assign it first</h2>';
+            exit();
+        }
+         ?>
+            <h4>Select all the capabilities this device has, in order to allow reconfiguration based on capabilities, or add additional ones.</h4>
+
+            <form action="devices.php?action=saveboot" method="post">
+                <input type="hidden" name="id" value="<?php echo $id; ?>">
+                <?php
+                foreach ($result as $devices) {
+
+                    if ($devices['boot'] == 1) {
+                        $checked = "checked";
+                    } else {
+                        $checked = "";
+                    }
+                ?>
+                    <div class="radio">
+                        <label><input type="checkbox" name="actionid" <?php echo $checked; ?> value="<?php echo $devices['actionid']; ?>"><?php echo $devices['name']; ?></label>
+                    </div>
+                <?php
+                }
+                echo "<input type=\"submit\" class='btn btn-success pull-right' role='button' value='Save'>";
+                ?>
+            </form>
+        </div>
+    </div>
+    <?php
+    }
 } else if ($_GET['action'] == 'addmutation' && $_SESSION['role'] == 'engineer' ) {
     if (isset($_GET['id'])) {
 
@@ -137,7 +190,7 @@ if ( $_GET['action'] == 'mutations' ) {
     }
 ?>
     <div class='container'>
-        <form class='form-horizontal' action='devices.php?action=savemutation' method='POST'>
+        <form class='form-horizontal' action='devices.php?action=assignmutation' method='POST'>
             <input type='hidden' value='<?php echo $id; ?>' name='id' />
             <div class="form-group">
                 <label for="text">Select mutation:</label>
@@ -148,6 +201,41 @@ if ( $_GET['action'] == 'mutations' ) {
                     $sth->execute();
                     while ($mutation = $sth->fetch(PDO::FETCH_ASSOC)) {
                         echo '<option value="' . $mutation['mutationid'] . '">' . $mutation['name'] . '</option>';
+                    }
+                    ?>
+                </select>
+            </div>
+            <button id='submit' name='submit' class='btn btn-danger pull-right'>Submit</button>
+        </form>
+    </div>
+    <?php
+} else if ($_GET['action'] == 'addcapability' && $_SESSION['role'] == 'engineer' ) {
+    if (isset($_GET['id'])) {
+
+        $id = $_GET['id'];
+
+        $stmt = $db->prepare("SELECT * FROM devices WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $r_name    = $result['name'];
+        $r_desc    = $result['description'];
+        $r_node_id = $result['node_id'];
+    }
+?>
+    <div class='container'>
+        <form class='form-horizontal' action='devices.php?action=assigncapability' method='POST'>
+            <input type='hidden' value='<?php echo $id; ?>' name='id' />
+            <div class="form-group">
+                <label for="text">Select capability:</label>
+                <select name="capabilityid" class="form-control">
+                    <?php
+                    $sqlc = "select * from capabilities order by name asc";
+                    $sth = $db->prepare($sqlc);
+                    $sth->execute();
+                    while ($capability = $sth->fetch(PDO::FETCH_ASSOC)) {
+                        echo '<option value="' . $capability['capabilityid'] . '">' . $capability['name'] . '</option>';
                     }
                     ?>
                 </select>
@@ -331,7 +419,7 @@ if ( $_GET['action'] == 'mutations' ) {
         $_SESSION["message"] = "Reconfiguration action boot is not changed";
         redirect('devices.php?action=list');
     }
-} else if ($_GET['action'] == 'savemutation') {
+} else if ($_GET['action'] == 'assignmutation') {
     $mutationid = $_POST['mutationid'];
     $id         = $_POST['id'];
 
@@ -347,6 +435,24 @@ if ( $_GET['action'] == 'mutations' ) {
         echo '<p>Reconfiguration action not added in database</p>';
         $_SESSION["messagetype"] = "danger";
         $_SESSION["message"] = "Reconfiguration action not added in database";
+        redirect('devices.php?action=list');
+    }
+} else if ($_GET['action'] == 'assigncapability') {
+    $capabilityid = $_POST['capabilityid'];
+    $id           = $_POST['id'];
+
+    $stmt = $db->prepare('INSERT INTO device_capabilities (capabilityid,deviceid) VALUES ( :capabilityid, :deviceid )');
+    $stmt->execute([ 'capabilityid'=> $capabilityid, 'deviceid'=>$id ]);
+
+    if ($stmt) {
+        echo '<p>Capability assigned to the device</p>';
+        $_SESSION["messagetype"] = "success";
+        $_SESSION["message"] = "Capability assigned to the device";
+        redirect('devices.php?action=mutations&id='.$id);
+    } else {
+        echo '<p>Capability is not assigned to the device</p>';
+        $_SESSION["messagetype"] = "danger";
+        $_SESSION["message"] = "Capability is not assigned to the device";
         redirect('devices.php?action=list');
     }
 } else if ($_GET['action'] == 'update') {

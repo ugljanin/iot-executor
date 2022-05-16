@@ -58,6 +58,9 @@ $filename=basename($_SERVER['PHP_SELF']);
                   <li <?php if($filename=='devices.php' ) echo ' class="active"';?>>
                       <a href="devices.php?action=list"><i class="fa fa-fw fa-cog"></i> Devices</a>
                   </li>
+                  <li <?php if($filename=='capabilities.php' ) echo ' class="active"';?>>
+                      <a href="capabilities.php?action=list"><i class="fa fa-info"></i> Capabilities</a>
+                  </li>
                   <li <?php if($filename=='reconfigurations.php' ) echo ' class="active"';?>>
                       <a href="reconfigurations.php?action=list"><i class="fa fa-exchange"></i> Reconfigurations</a>
                   </li>
