@@ -1,14 +1,23 @@
 <?php
 require("fns.php");
+header("Content-Type:application/json");
+$data = json_decode(file_get_contents('php://input'), true);
 
 use PhpMqtt\Client\MqttClient;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 if (isset($_POST['mutationid']) && isset($_POST['nodeid'])) {
     $mutationid = $_POST['mutationid'];
     $node_id    = $_POST['nodeid'];
+=======
+if (isset($data['mutationid']) && isset($data['nodeid'])) {
+    $mutationid = $data['mutationid'];
+    $node_id    = $data['nodeid'];
+>>>>>>> 3e9ed14 (Code improvements)
 
-    $sql = "SELECT mutations.name, mutations.code,devices.node_id,devices.id, mutations.mutationid, mutations_actions.actionid, mutations_actions.boot
+    $sql = "SELECT mutations.name, mutations.code,devices.node_id,devices.id, mutations.mutationid, mutations_actions.actionid,
+        mutations_actions.boot
         FROM mutations,mutations_actions,devices
         where mutations.mutationid=mutations_actions.mutationid
         and mutations_actions.deviceid=devices.id
@@ -46,7 +55,7 @@ if (isset($_GET['mutationid']) && isset($_GET['nodeid'])) {
     //unselect all
 <<<<<<< HEAD
     $stmt = $db->prepare('UPDATE mutations_actions SET boot=0 where deviceid = :deviceid');
-    $stmt->execute([ 'deviceid'=>$id ]);
+    $stmt->execute([ 'deviceid'=>$deviceid ]);
 
     //select only the one from the form
     $stmt = $db->prepare('UPDATE mutations_actions SET `boot` = 1 where actionid = :actionid');
@@ -54,10 +63,11 @@ if (isset($_GET['mutationid']) && isset($_GET['nodeid'])) {
 
     //force update
     $stmt = $db->prepare('UPDATE devices SET `update`=1 where id = :deviceid');
-    $stmt->execute([ 'deviceid'=>$id ]);
+    $stmt->execute([ 'deviceid'=>$deviceid ]);
 
     //log mutation as initial
     $stmt = $db->prepare('insert into mutations_log (deviceid, mutationid, date, type, status) values ( :deviceid, :mutationid, :date, :init, :status )');
+<<<<<<< HEAD
     $stmt->execute([ 'deviceid'=>$id, 'mutationid'=>$result['mutationid'], 'date'=> date('Y-m-d H:i:s'), 'init'=>'init', 'status' => 'Pending']);
 =======
     $sql = "UPDATE mutations_actions SET boot=0 where node_id=$node_id";
@@ -75,18 +85,29 @@ if (isset($_GET['mutationid']) && isset($_GET['nodeid'])) {
     $sql = "insert into mutations_log (node_id, mutationid, mutation_date, type, status) values ('" . $node_id . "', '" . $result['mutationid'] . "','" . date('Y-m-d H:i:s') . "','init','Pending')";
     $db->exec($sql);
 >>>>>>> 7cce95b (Code refactoring)
+=======
+    $stmt->execute([ 'deviceid'=>$deviceid, 'mutationid'=>$result['mutationid'], 'date'=> date('Y-m-d H:i:s'), 'init'=>'init', 'status' => 'Pending']);
+>>>>>>> 3e9ed14 (Code improvements)
 
     if ( $stmt ) {
-        echo '<p>Mutation action boot is changed</p>';
-
         $client->publish('/mutation/update', $result['node_id'] , MqttClient::QOS_AT_MOST_ONCE);
-
-        echo "Sent instruction for update\n";
-
+        response(200, "Sent instruction for update on node ".$result['node_id']);
         $client->disconnect();
         unset($client);
     } else {
-        echo '<p>Mutation action boot is not changed</p>';
+        response(400, "Mutation action boot is not changed");
     }
+}
+
+
+function response($status, $status_message)
+{
+    header("HTTP/1.1 " . $status);
+
+    $response['status'] = $status;
+    $response['status_message'] = $status_message;
+
+    $json_response = json_encode($response);
+    echo $json_response;
 }
 ?>

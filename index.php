@@ -9,8 +9,8 @@ if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
 	$ip = $_SERVER['REMOTE_ADDR'];
 }
 
-$date = date('Y-m-d H:i:s', time());
-$time = time();
+$date    = date('Y-m-d H:i:s', time());
+$time    = time();
 $expired = $time - 1800;
 
 $_SESSION['expire'] = $time + 28800;
