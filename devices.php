@@ -16,7 +16,7 @@ if ($_GET['action'] == 'list') {
         <h4>List of managed devices
             <?php
             if ($_SESSION['role'] == 'engineer') {
-                echo "<a href='devices.php?action=add&newdevice=1' class='btn btn-danger pull-right' role='button'>Add new device</a>";
+                echo "<a href='devices.php?action=add&newdevice=1' class='btn btn-primary pull-right' role='button'>Add new device</a>";
             }
             ?>
         </h4>
@@ -49,16 +49,17 @@ if ($_GET['action'] == 'list') {
                     echo "<td>" . $devices['timestamp'] . "</td>";
                     echo "<td>" . $devices['status'] . "</td>";
                     echo "<td>";
-                    echo "<a href='?action=add&id=$devices[id]' class='btn-sm btn-info' role='button'>Edit</a>&nbsp;";
                     echo "<a href='devices.php?action=update&id=$devices[id]' class='btn-sm " . ($devices['update'] == 1 ? 'btn-dark' : 'btn-warning') ."' role='button'>";
                     if( $devices['update'] == 1 )
                         echo "Cancel update";
                     else
                         echo "Force update";
                     echo "</a>&nbsp;";
-                    echo "<a href='devices.php?action=mutations&id=$devices[id]' class='btn-sm btn-success' role='button'>Available reconfigurations</a>";
+                    echo "<a href='devices.php?action=mutations&id=$devices[id]' class='btn-sm btn-success' role='button'>Codes</a>&nbsp;";
+                    echo "<a href='devices.php?action=capabilities&id=$devices[id]' class='btn-sm btn-success' role='button'>Capabilities</a>";
                     echo '</td>';
                     echo '<td>';
+                    echo "<a href='?action=add&id=$devices[id]' class='btn-sm btn-info' role='button'>Edit</a>&nbsp;";
                     echo "<a href='devices.php?action=delete&id=$devices[id]' class='btn-sm btn-danger' role='button'>Delete</a>";
                     echo "</td>";
                     echo "<tr>";
@@ -135,41 +136,43 @@ if ( $_GET['action'] == 'mutations' ) {
             ?>
         <?php
 
-        $stmt = $db->prepare('SELECT capabilities.name, capabilities.capabilityid, device_capabilities.deviceid
+        $stmt = $db->prepare('SELECT capabilities.name, capabilities.capabilityid, device_capabilities.deviceid, device_capabilities.id
         FROM devices, capabilities, device_capabilities
         where device_capabilities.capabilityid = capabilities.capabilityid
         and device_capabilities.deviceid = devices.id
         and device_capabilities.deviceid = :deviceid
-        ORDER BY actionid DESC');
+        ORDER BY capabilities.name DESC');
         $stmt->execute(['deviceid' => $id]);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $assigned_capabilities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if( count( $result ) == 0 ) {
-            echo '<h2>No capabilities are assigned to the device, please assign it first</h2>';
+        if( count( $assigned_capabilities ) == 0 ) {
+            echo '<h2>No capabilities are added, please add them first</h2>';
             exit();
         }
          ?>
-            <h4>Select all the capabilities this device has, in order to allow reconfiguration based on capabilities, or add additional ones.</h4>
-
-            <form action="devices.php?action=saveboot" method="post">
-                <input type="hidden" name="id" value="<?php echo $id; ?>">
+            <h4>List of assigned capabilities to this device.</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Capability ID</th>
+                        <th>Name</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
                 <?php
-                foreach ($result as $devices) {
-
-                    if ($devices['boot'] == 1) {
-                        $checked = "checked";
-                    } else {
-                        $checked = "";
-                    }
+                foreach ($assigned_capabilities as $capabilities) {
                 ?>
-                    <div class="radio">
-                        <label><input type="checkbox" name="actionid" <?php echo $checked; ?> value="<?php echo $devices['actionid']; ?>"><?php echo $devices['name']; ?></label>
-                    </div>
+                    <tr>
+                        <td width="100"><?php echo $capabilities['capabilityid']; ?></td>
+                        <td><?php echo $capabilities['name']; ?></td>
+                        <td><a href='devices.php?action=unassigncapability&id=<?php echo $capabilities['id'];?>' class='btn-sm btn-danger' role='button'>Delete</a></td>
+                    </tr>
                 <?php
                 }
-                echo "<input type=\"submit\" class='btn btn-success pull-right' role='button' value='Save'>";
                 ?>
-            </form>
+                </tbody>
+            </table>
         </div>
     </div>
     <?php
@@ -448,7 +451,7 @@ if ( $_GET['action'] == 'mutations' ) {
         echo '<p>Capability assigned to the device</p>';
         $_SESSION["messagetype"] = "success";
         $_SESSION["message"] = "Capability assigned to the device";
-        redirect('devices.php?action=mutations&id='.$id);
+        redirect('devices.php?action=capabilities&id='.$id);
     } else {
         echo '<p>Capability is not assigned to the device</p>';
         $_SESSION["messagetype"] = "danger";
@@ -529,6 +532,30 @@ if ( $_GET['action'] == 'mutations' ) {
             $_SESSION["messagetype"] = "danger";
             $_SESSION["message"] = "Device is not deleted";
             redirect('devices.php?action=list');
+        }
+    }
+} else if ($_GET['action'] == 'unassigncapability') {
+    if (isset($_GET['id'])) {
+        $id = $_GET['id'];
+
+        $stmt = $db->prepare( "select * FROM device_capabilities WHERE id = :id " );
+        $stmt->execute( [ 'id' => $id ] );
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $deviceid    = $result['deviceid'];
+
+        $stmt = $db->prepare( "delete FROM device_capabilities WHERE id = :id " );
+        $stmt->execute( [ 'id' => $id ] );
+
+        if ( $stmt ) {
+            echo '<p>Capability unasssigned from the device</p>';
+            $_SESSION["messagetype"] = "success";
+            $_SESSION["message"] = "Capability unasssigned from the device";
+            redirect('devices.php?action=capabilities&id='.$deviceid);
+        } else {
+            echo '<p>Capability is not unasssigned from the device</p>';
+            $_SESSION["messagetype"] = "danger";
+            $_SESSION["message"] = "Capability is not unasssigned from the device";
+            redirect('devices.php?action=capabilities&id='.$deviceid);
         }
     }
 }
