@@ -30,7 +30,10 @@ if ( $_GET['action'] == 'list' ) {
             echo '<tr>';
             echo '<td><strong>'.$capabilities['name'].'</strong></td>';
             echo '<td>'.$capabilities['description'].'</td>';
-            echo '<td><a href="capabilities.php?action=create&id='.$capabilities['capabilityid'].'" class="btn btn-sm btn-primary">Edit</a></td>';
+            echo '<td>';
+            echo '<a href="capabilities.php?action=create&id='.$capabilities['capabilityid'].'" class="btn btn-sm btn-primary">Edit</a>';
+            echo '<a href="capabilities.php?action=delete&id='.$capabilities['capabilityid'].'" class="btn btn-sm btn-danger" role="button">Delete</a>';
+            echo '</td>';
             echo '</tr>';
         }
             ?>
@@ -43,9 +46,14 @@ else if ( $_GET['action']=='delete' && $_SESSION['role']=='engineer' ) {
 	$title="Detele capability ";
 	include "header.php";
 
+    $id = $_GET['id'];
 	echo 'Capability is deleted';
 
     $stmt = $db->prepare('delete from capabilities where capabilityid= :capabilityid');
+	$stmt->execute(['capabilityid' => $id]);
+	$result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $stmt = $db->prepare('delete from device_capabilities where capabilityid= :capabilityid');
 	$stmt->execute(['capabilityid' => $id]);
 	$result = $stmt->fetch(PDO::FETCH_ASSOC);
 

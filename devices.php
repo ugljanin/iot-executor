@@ -79,7 +79,7 @@ if ( $_GET['action'] == 'mutations' ) {
         <div class="container">
             <?php
             if ($_SESSION['role'] == 'engineer') {
-                echo "<a href='devices.php?action=addmutation&id=$id' class='btn btn-primary pull-right' role='button'>Add additional mutation to list</a>";
+                echo "<a href='devices.php?action=addmutation&id=$id' class='btn btn-primary pull-right' role='button'>Add additional reconfiguration code to the list</a>";
             }
             ?>
         <?php
@@ -231,7 +231,7 @@ if ( $_GET['action'] == 'mutations' ) {
         <form class='form-horizontal' action='devices.php?action=assigncapability' method='POST'>
             <input type='hidden' value='<?php echo $id; ?>' name='id' />
             <div class="form-group">
-                <label for="text">Select capability:</label>
+                <label for="text">Select capability to be added for selected device:</label>
                 <select name="capabilityid" class="form-control">
                     <?php
                     $sqlc = "select * from capabilities order by name asc";
@@ -243,7 +243,7 @@ if ( $_GET['action'] == 'mutations' ) {
                     ?>
                 </select>
             </div>
-            <button id='submit' name='submit' class='btn btn-danger pull-right'>Submit</button>
+            <button id='submit' name='submit' class='btn btn-primary pull-right'>Add capability</button>
         </form>
     </div>
     <?php

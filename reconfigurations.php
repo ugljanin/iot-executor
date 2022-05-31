@@ -8,7 +8,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'list') {
 	include "header.php";
 	if ( $_SESSION['role'] == 'engineer' ) {
 ?>
-		<a href="reconfiguration.php?action=create" class="btn btn-primary" role="button">Create new reconfiguration</a>
+		<a href="reconfigurations.php?action=create" class="btn btn-primary" role="button">Create new reconfiguration</a>
 	<?php
 	}
 	?>
@@ -34,10 +34,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'list') {
 					echo "<td>{$mutations['mutationid']}</td>";
 					echo "<td><strong>{$mutations['name']}</strong></td>";
 					echo "<td>{$mutations['description']}</td>";
-					echo "<td><a href=\"reconfiguration.php?action=viewcode&id={$mutations['mutationid']}\" class=\"btn btn-sm btn-success\">View source code</a>";
-					echo "<a href=\"reconfiguration.php?action=create&id={$mutations['mutationid']}\" class=\"btn btn-sm btn-primary\">Edit</a>";
+					echo "<td><a href=\"reconfigurations.php?action=viewcode&id={$mutations['mutationid']}\" class=\"btn btn-sm btn-success\">View source code</a>";
+					echo "<a href=\"reconfigurations.php?action=create&id={$mutations['mutationid']}\" class=\"btn btn-sm btn-primary\">Edit</a>";
 					if( $_SESSION['role'] == 'engineer' ) {
-						echo "<a href=\"reconfiguration.php?action=delete&id={$mutations['mutationid']}\" class=\"btn btn-sm btn-danger\">Delete</a>";
+						echo "<a href=\"reconfigurations.php?action=delete&id={$mutations['mutationid']}\" class=\"btn btn-sm btn-danger\">Delete</a>";
 					}
 					echo "</td>";
 					echo "</tr>";
@@ -47,24 +47,20 @@ if (isset($_GET['action']) && $_GET['action'] == 'list') {
 		</table>
 	</div>
 <?php
-}
-if (isset($_GET['action']) && $_GET['action'] == 'viewcode') {
-
+} else if (isset($_GET['action']) && $_GET['action'] == 'viewcode') {
 	$title = "View source code";
 	include "header.php";
 
 	$id   = $_GET['id'];
-	$stmt = $db->prepare('select * from mutations where mutationid= :mutationid');
-
+	$stmt = $db->prepare('select * from mutations where mutationid = :mutationid');
 	$stmt->execute(['mutationid' => $id]);
-
 	$result = $stmt->fetch(PDO::FETCH_ASSOC);
 
+	echo '<h2>Code for reconfiguration: '.$result['name'].'</h2>';
 	echo '<pre>';
 	echo $result['code'];
 	echo '</pre>';
-}
-if (isset($_GET['action']) && $_GET['action'] == 'delete' && $_SESSION['role'] == 'engineer') {
+} else if (isset($_GET['action']) && $_GET['action'] == 'delete' && $_SESSION['role'] == 'engineer') {
 	// Delete reconfiguration
 	$title = "Detele reconfiguration ";
 	include "header.php";
@@ -81,17 +77,16 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && $_SESSION['role'] =
 		$_SESSION["messagetype"] = "success";
 		$_SESSION["message"]     = "Code is deleted";
 
-		redirect('reconfiguration.php?action=list');
+		redirect('reconfigurations.php?action=list');
 	} else {
 		echo 'Code is not deleted';
 
 		$_SESSION["messagetype"] = "danger";
 		$_SESSION["message"]     = "Code is not deleted";
 
-		redirect('reconfiguration.php?action=list');
+		redirect('reconfigurations.php?action=list');
 	}
-}
-if (isset($_GET['action']) && $_GET['action'] == 'create') {
+} else if (isset($_GET['action']) && $_GET['action'] == 'create') {
 	$title = "Create reconfiguration";
 
 	if(isset($_GET['id'])) {
@@ -105,7 +100,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'create') {
 	include "header.php";
 ?>
 	<div class="row-flud">
-		<form action="reconfiguration.php?action=save" method="post">
+		<form action="reconfigurations.php?action=save" method="post">
 			<input type="hidden" name="mutationid" value="<?php echo isset($id) ? $id : ''; ?>">
 			<h2>Content of Reconfiguration</h2>
 			<div class="row">
@@ -150,8 +145,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'create') {
 		</form>
 	</div>
 <?php
-}
-if (isset($_GET['action']) && $_GET['action'] == 'save') {
+} else if (isset($_GET['action']) && $_GET['action'] == 'save') {
 	$name        = $_POST['name'];
 	$description = $_POST['description'];
 	$code        = $_POST['code'];
@@ -183,15 +177,15 @@ if (isset($_GET['action']) && $_GET['action'] == 'save') {
 		$_SESSION["messagetype"] = "success";
 		$_SESSION["message"]     = "Reconfiguration is created";
 
-		redirect('reconfiguration.php?action=list');
+		redirect('reconfigurations.php?action=list');
 	} else {
 		echo '<p>Code is not added in the database</p>';
 
 		$_SESSION["messagetype"] = "danger";
 		$_SESSION["message"]     = "Code is not created";
 
-		redirect('reconfiguration.php?action=list');
+		redirect('reconfigurations.php?action=list');
 	}
 }
-
-include "footer.php"; ?>
+include "footer.php";
+?>
