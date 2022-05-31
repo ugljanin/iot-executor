@@ -8,7 +8,7 @@ if ( $_GET['action'] == 'list' ) {
     if($_SESSION['role']=='engineer')
     {
         ?>
-        <a href="mutations.php?action=create" class="btn btn-primary" role="button">Create capability</a>
+        <a href="capabilities.php?action=create" class="btn btn-primary" role="button">Create capability</a>
         <?php
     }
         ?>
@@ -70,29 +70,31 @@ else if ( $_GET['action']=='delete' && $_SESSION['role']=='engineer' ) {
 }
 else if ( $_GET['action'] == 'create' ) {
 	$title="Create Capability";
-    $id = $_GET['id'];
-    $stmt = $db->prepare('select * from capabilities where capabilityid = :capabilityid');
-	$stmt->execute(['capabilityid' => $id]);
-	$capability = $stmt->fetch(PDO::FETCH_ASSOC);
+	if ( isset($_GET['id']) ) {
+		$id = $_GET['id'];
+		$stmt = $db->prepare('select * from capabilities where capabilityid = :capabilityid');
+		$stmt->execute(['capabilityid' => $id]);
+		$capability = $stmt->fetch(PDO::FETCH_ASSOC);
+	}
 	include "header.php";
 	?>
 	<div class="row-flud">
 		<form action="capabilities.php?action=save" method="post">
-		<input type="hidden" name="capabilityid" value="<?php echo $id;?>">
+		<input type="hidden" name="capabilityid" value="<?php echo isset( $id ) ? $id : '';?>">
 		<h2>Content of Capability</h2>
 			<div class="row">
 				<div class='col-sm-12'>
 					<div class="form-group">
 						<label for="title">Name:</label>
                         <div class="rule-value-container">
-                            <input class="form-control" type="text" name="name" value="<?php echo $capability['name'];?>">
+                            <input class="form-control" type="text" name="name" value="<?php echo isset( $capability['name'] ) ? $capability['name'] : '';?>">
                         </div>
 					</div>
 				</div>
 				<div class='col-sm-12'>
 					<div class="form-group">
 						<label for="title">Description:</label>
-						<textarea name="description" class="form-control" id="description"><?php echo $capability['description'];?></textarea>
+						<textarea name="description" class="form-control" id="description"><?php echo isset( $capability['description'] ) ? $capability['description'] : '';?></textarea>
 					</div>
 				</div>
 				<div class='col-sm-6'>
