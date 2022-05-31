@@ -87,7 +87,7 @@ function downloadAndCompile()
     end)
 end
 
-id = node.node_id()
+id = node.chipid()
 print ("nodeID is: "..id)
 
 LoadX()
@@ -116,7 +116,7 @@ if (s.broker~="") then
         else
             print ("Init NodeMCU IP: " .. wifi.sta.getip())
 
-            m = mqtt.Client(node.node_id(), 120, s.mqttuser, s.mqttpass)
+            m = mqtt.Client(id, 120, s.mqttuser, s.mqttpass)
 
             -- Checking if there is script available when running for the first time
             m:connect(s.broker, s.port, false , function(conn)
