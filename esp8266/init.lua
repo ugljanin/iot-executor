@@ -101,12 +101,12 @@ if (s.broker~="") then
     wifi.sta.config(station_cfg)
     wifi.sta.autoconnect (1)
 
-    iFail = 20 -- trying to connect to AP in 20sec, if not then reboot
+    iFail = 0 -- trying to connect to AP in 20sec, if not then reboot
     local mytimer = tmr.create()
 
     mytimer:register(1000, 1, function (t)
-        iFail = iFail -1
-        if (iFail == 0) then
+        iFail = iFail + 1
+        if (iFail == 20) then
             SaveX("Could not access WiFi: Zzz"..s.ssid)
             node.restart()
         end
