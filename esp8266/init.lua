@@ -137,11 +137,7 @@ if (s.broker~="") then
                         print("-----------")
                         print("Stoping previously running script and restarting the device on message ...")
                         print("-----------")
-
-                        downloadAndCompile()
-                        -- s.boot=nil
-                        -- SaveX()
-                        -- node.restart()
+                        checkIfScriptUpdateIsPending()
                     end
                 end
             end)
