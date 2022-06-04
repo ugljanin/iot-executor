@@ -1,6 +1,6 @@
 function LoadX()
     print("------LoadX------")
-    s = {ssid="", pwd="", broker="", domain="", err="",boot="",port=""}
+    s = {ssid="", pwd="", mqttbroker="", domain="", err="",boot="",mqttport=""}
     if (file.open("config.txt","r")) then
         local sF = file.read()
         --print("setting: "..sF)
@@ -92,7 +92,7 @@ print ("nodeID is: "..id)
 
 LoadX()
 
-if (s.broker~="") then
+if (s.mqttbroker~="") then
     wifi.setmode (wifi.STATION)
     station_cfg={}
     station_cfg.ssid=s.ssid
@@ -119,7 +119,7 @@ if (s.broker~="") then
             m = mqtt.Client(id, 120, s.mqttuser, s.mqttpass)
 
             -- Checking if there is script available when running for the first time
-            m:connect(s.broker, s.port, false , function(conn)
+            m:connect(s.mqttbroker, s.mqttport, false , function(conn)
                 print("Checking if there is script available when running for the first time")
                 print("Connecting to MQTT broker.")
                 m:subscribe("/mutation/update", 0, function(conn)

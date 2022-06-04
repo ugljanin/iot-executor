@@ -1,10 +1,10 @@
 update=0
-ssid=
 boot=
-domain=
-port=
-broker=
+ssid=
 pwd=
-err=No error
+domain=
+mqttport=
+mqttbroker=
 mqttpass=
 mqttuser=
+err=No error
