@@ -2,7 +2,6 @@ update=0
 ssid=
 boot=
 domain=
-host=
 port=
 broker=
 pwd=
